@@ -65,9 +65,13 @@ style = "purple"
 style = "red"
 
 [cmd_duration]
-# Disabled in 2022 and kept that way. Remove this to see how long slow commands
-# took; it only renders above a threshold, so it is not noisy.
-disabled = true
+# Disabled in 2022, re-enabled because the work changed: terragrunt runs, `uv sync
+# --all-packages`, `hk check`, and Rails test suites all take long enough that
+# knowing after the fact is useful. Nothing renders below the threshold, so fast
+# commands are unaffected.
+min_time = 2_000
+style = "grey"
+format = "took [$duration]($style) "
 
 [terraform]
 # Show the workspace, which the default format omits. Applies to OpenTofu too
@@ -79,6 +83,28 @@ symbol = "\ue33d "             # dev-aws
 style = "orange"
 # The oh-my-zsh aws plugin also wants to show the profile; SHOW_AWS_PROMPT=false
 # in .zshrc.d/80-misc.zsh turns that off so it isn't displayed twice.
+#
+# Shown when credentials expire. Worth having with AWS SSO, where the failure
+# otherwise arrives as an opaque API error partway through a command.
+expiration_symbol = "\uf071 "  # fa-warning
+
+# Make production unmistakable.
+#
+# starship cannot style this module conditionally on the profile name, so the
+# loudness has to live in the text itself. profile_aliases rewrites the displayed
+# string and costs nothing at runtime, unlike a [custom] module, which would spawn
+# a subprocess on every prompt.
+#
+# These are placeholders — no profiles are configured on this machine yet. Replace
+# the keys with real profile names; the key must match exactly, so add one line per
+# production profile rather than expecting a pattern to match.
+#
+# Note that the whole module stays hidden until ~/.aws/config actually defines the
+# profile with credentials, a credential_process, or an SSO session. Exporting
+# AWS_PROFILE alone renders nothing, so this looks broken before AWS is set up.
+[aws.profile_aliases]
+# censinet-production = "\uf071 PRODUCTION"
+# censinet-prod       = "\uf071 PRODUCTION"
 
 [buf]
 symbol = "\uf49d "             # oct-package (buf has no dedicated glyph)
@@ -138,6 +164,14 @@ display_private = true
 [python]
 symbol = "\ue235 "             # fae-python
 style = "yellow"
+
+[ruby]
+# Without this, starship falls back to its default 💎 emoji — the only module not
+# using a Nerd Font glyph, and unreliable besides, since iTerm2 has non-ASCII font
+# fallback turned off (see docs/theming.md). This is the most-seen module in the
+# censinet monorepo, whose server/ root is Ruby.
+symbol = "\ue739 "             # dev-ruby
+style = "red"
 
 [rust]
 symbol = "\ue7a8 "             # dev-rust

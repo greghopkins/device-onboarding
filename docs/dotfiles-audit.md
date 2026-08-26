@@ -48,8 +48,11 @@ checks for it.
 - **The `.zshrc.d` fragment pattern** and `mattmc3/zshrc.d` as its loader.
 - **Eight of nine oh-my-zsh plugins** via zplug: git, macos, aliases, aws,
   zsh-navigation-tools, sudo, dirhistory, history.
-- **Starship** with its Nerd Font symbols, `cmd_duration` disabled, and the
-  terraform workspace format. One Dark colors added.
+- **Starship** with its Nerd Font symbols and the terraform workspace format. One
+  Dark colors added. `cmd_duration` was carried over disabled but has since been
+  re-enabled above a 2s threshold: the censinet monorepo's terragrunt runs, `uv
+  sync`, and Rails suites are slow enough that the timing is worth seeing, which
+  was not true of the 2022 workload.
 - **The full `.gitconfig`** — see the deferred audit below.
 - **The global `.gitignore`**, minus two entries (see below).
 - **The iTerm2 plist**, including its One Dark preset and hotkey window profile.
