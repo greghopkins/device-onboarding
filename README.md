@@ -52,6 +52,7 @@ home/                 stowed into $HOME as symlinks (make link)
   .zshrc.d/*.zsh      numbered fragments, loaded last so they win
   .gitconfig          global git config + per-org identity rules
   .gitignore          global ignore file
+  .hushlogin          empty on purpose; silences login(1)'s "Last login:" banner
   .config/
     starship.toml     prompt, One Dark palette
     git/*.gitconfig   one file per git identity
