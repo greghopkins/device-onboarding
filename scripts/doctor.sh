@@ -290,6 +290,29 @@ fi
 grep -q 'palette = "onedark"' "$PKG_DIR/.config/starship.toml" 2>/dev/null \
   && ok "starship One Dark palette" || bad "starship palette not set"
 
+# Starship's Nerd Font glyphs are Private Use Area codepoints. They render as
+# nothing when lost, and a blank symbol is indistinguishable from a space in
+# both the editor and a diff -- every symbol in this config was silently blanked
+# once without anything noticing. Two checks, because they catch different
+# failures:
+#
+#   1. the config still declares glyphs (they weren't stripped again)
+#   2. the glyphs survive to the rendered prompt (the font actually has them,
+#      which matters because Nerd Fonts v3 moved codepoints v2 used)
+blanks="$(grep -cE '^[[:space:]]*(symbol|read_only)[[:space:]]*=[[:space:]]*"[[:space:]]*"' \
+  "$PKG_DIR/.config/starship.toml" 2>/dev/null || true)"
+[[ "$blanks" -eq 0 ]] && ok "starship symbols all declare a glyph" \
+  || bad "$blanks starship symbol(s) are blank — glyphs were stripped"
+
+if command -v starship >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse >/dev/null 2>&1; then
+  # Strip ASCII (which removes the ANSI color codes too); anything left is the
+  # glyph's UTF-8 bytes.
+  glyph_bytes="$(cd "$REPO_ROOT" && starship module git_branch 2>/dev/null \
+    | LC_ALL=C tr -d '\000-\177' | wc -c | tr -d ' ')"
+  [[ "${glyph_bytes:-0}" -gt 0 ]] && ok "starship renders the git branch glyph" \
+    || bad "starship git branch glyph renders blank"
+fi
+
 # ---------------------------------------------------------------------------
 head "Login shell"
 # ---------------------------------------------------------------------------

@@ -35,6 +35,26 @@ The one thing that did need fixing was the font. The profile referenced
 variant, which no longer exists in the current cask. It is now
 `FiraCodeNFM-Ret`. See [fonts.md](fonts.md).
 
+### Starship
+
+The One Dark palette is the only color addition; the Nerd Font symbols came from
+the 2022 config. Those symbols are written as `\uXXXX` escapes rather than pasted
+literally, which is worth preserving:
+
+- The glyphs live in the Unicode Private Use Area, so they are invisible in most
+  editors and a lost glyph looks exactly like a plain space — including in a
+  diff. All 23 symbols were blanked at one point, and the only visible sign was a
+  gap where the branch icon should have been.
+- Nerd Fonts v3 relocated the Material Design range (`F500-FD46` to
+  `F0001-F1AF0`). Five symbols carried over from 2022 pointed at codepoints that
+  no longer exist and rendered blank even when the glyph was intact:
+  `read_only`, `memory_usage`, `nim`, `package`, and `spack`. The first four now
+  use their v3 equivalents; the `spack` module was dropped, since its symbol was
+  never a Nerd Font glyph at all.
+
+`doctor.sh` checks both halves of this: that the config still declares glyphs,
+and that they survive into the rendered prompt.
+
 ### Cursor
 
 `One Dark Operator` rather than the more popular One Dark Pro, because it tunes

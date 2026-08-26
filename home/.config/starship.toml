@@ -3,9 +3,29 @@
 # Carried forward from the 2022 dotfiles repo, which set Nerd Font symbols but
 # no colors. The One Dark palette below is the addition.
 #
-# The symbols require a Nerd Font. iTerm2 and Cursor's integrated terminal are
-# both set to FiraCode Nerd Font Mono; if you see boxes, the terminal font is
-# wrong, not this file. See docs/fonts.md.
+# ---------------------------------------------------------------------------
+# Why every glyph is written as a \uXXXX escape
+#
+# These symbols live in the Unicode Private Use Area (E000-F8FF and F0000+).
+# Pasted literally they are invisible in most editors, indistinguishable from a
+# plain space in a diff, and trivially lost by any tool that touches the file --
+# which is exactly what happened once here, silently blanking all 23 symbols and
+# leaving a suspicious gap before the branch name.
+#
+# TOML basic strings support \uXXXX (4 hex digits) and \UXXXXXXXX (8 digits, for
+# codepoints above U+FFFF). Escapes are pure ASCII, so they survive anything,
+# and the glyph name in the trailing comment says what each one should look
+# like.
+#
+# To verify a codepoint actually exists in the installed font:
+#   python -c "from fontTools.ttLib import TTFont; \
+#     f=TTFont('~/Library/Fonts/FiraCodeNerdFontMono-Retina.ttf'); \
+#     print(any(0xF418 in t.cmap for t in f['cmap'].tables))"
+#
+# Nerd Fonts v3 relocated the Material Design range (F500-FD46 -> F0001-F1AF0),
+# so five symbols from the 2022 config pointed at codepoints that no longer
+# exist and rendered blank. Those are noted inline below.
+# ---------------------------------------------------------------------------
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
@@ -32,13 +52,13 @@ vicmd_symbol = "[❮](purple)"   # vi normal mode; bindings are vi (see .zprezto
 
 [directory]
 style = "blue"
-read_only = " "
+read_only = " \uf456"          # oct-lock. Was U+F83D, which v3 removed.
 read_only_style = "red"
 truncation_length = 4
 truncate_to_repo = false
 
 [git_branch]
-symbol = " "
+symbol = "\uf418 "             # oct-git_branch
 style = "purple"
 
 [git_status]
@@ -55,71 +75,74 @@ disabled = true
 format = "via [$symbol$workspace $version]($style) "
 
 [aws]
-symbol = " "
+symbol = "\ue33d "             # dev-aws
 style = "orange"
 # The oh-my-zsh aws plugin also wants to show the profile; SHOW_AWS_PROMPT=false
 # in .zshrc.d/80-misc.zsh turns that off so it isn't displayed twice.
 
 [buf]
-symbol = " "
+symbol = "\uf49d "             # oct-package (buf has no dedicated glyph)
 
 [c]
-symbol = " "
+symbol = "\ue61e "             # custom-c
 
 [conda]
-symbol = " "
+symbol = "\uf10c "             # fa-circle_o
 
 [dart]
-symbol = " "
+symbol = "\ue798 "             # dev-dart
 
 [docker_context]
-symbol = " "
+symbol = "\uf308 "             # linux-docker
 
 [elixir]
-symbol = " "
+symbol = "\ue275 "             # custom-elixir
 
 [elm]
-symbol = " "
+symbol = "\ue62c "             # custom-elm
 
 [golang]
-symbol = " "
+symbol = "\ue627 "             # seti-go
 
 [haskell]
-symbol = " "
+symbol = "\ue777 "             # dev-haskell
 
 [hg_branch]
-symbol = " "
+symbol = "\uf418 "             # oct-git_branch
 
 [java]
-symbol = " "
+symbol = "\ue256 "             # dev-java
 style = "red"
 
 [julia]
-symbol = " "
+symbol = "\ue624 "             # seti-julia
 
 [memory_usage]
-symbol = " "
+symbol = "\U000F035B "         # md-memory. Was U+F85A, which v3 relocated.
 
 [nim]
-symbol = " "
+symbol = "\ue841 "             # dev-nim. Was U+F6A4 (a crown); the real Nim
+                               # logo is both correct and actually present.
 
 [nix_shell]
-symbol = " "
+symbol = "\uf2dc "             # fa-snowflake_o
 
 [nodejs]
-symbol = " "
+symbol = "\ue718 "             # dev-nodejs_small
 style = "green"
 
 [package]
-symbol = " "
+symbol = "\uf487 "             # oct-package. Was U+F8D6, which v3 relocated.
 display_private = true
 
 [python]
-symbol = " "
+symbol = "\ue235 "             # fae-python
 style = "yellow"
 
 [rust]
-symbol = " "
+symbol = "\ue7a8 "             # dev-rust
 
-[spack]
-symbol = "🅢 "
+# The 2022 config also set a [spack] symbol using U+1F162 (the enclosed letter
+# S), which is not a Nerd Font glyph and is absent from FiraCode. Dropped rather
+# than fixed: spack is an HPC package manager, and the module only renders inside
+# a spack environment.
