@@ -1,0 +1,21 @@
+# Personal identity.
+#
+# Applied to repositories under ~/src/github.com/greghopkins/ by the includeIf
+# rule at the bottom of ~/.gitconfig.
+#
+# CHANGEME: confirm these values are the ones you want on personal commits.
+
+[user]
+	name = Greg Hopkins
+	email = greg.hopkins@gmail.com
+
+# To sign personal commits with an SSH key from the Bitwarden agent, uncomment
+# and set signingkey to the public key string ("ssh-ed25519 AAAA...") or a path
+# to a .pub file:
+#
+# [user]
+# 	signingkey = ssh-ed25519 CHANGEME
+# [gpg]
+# 	format = ssh
+# [commit]
+# 	gpgsign = true

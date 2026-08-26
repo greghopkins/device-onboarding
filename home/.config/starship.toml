@@ -1,0 +1,125 @@
+# Starship prompt.
+#
+# Carried forward from the 2022 dotfiles repo, which set Nerd Font symbols but
+# no colors. The One Dark palette below is the addition.
+#
+# The symbols require a Nerd Font. iTerm2 and Cursor's integrated terminal are
+# both set to FiraCode Nerd Font Mono; if you see boxes, the terminal font is
+# wrong, not this file. See docs/fonts.md.
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# One Dark. Atom's palette, matching the iTerm2 color preset and the Cursor
+# theme so the prompt, the terminal, and the editor agree.
+palette = "onedark"
+
+[palettes.onedark]
+black    = "#282c34"   # background
+grey     = "#5c6370"   # comments
+white    = "#abb2bf"   # default foreground
+red      = "#e06c75"
+orange   = "#d19a66"
+yellow   = "#e5c07b"
+green    = "#98c379"
+cyan     = "#56b6c2"
+blue     = "#61afef"
+purple   = "#c678dd"
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vicmd_symbol = "[❮](purple)"   # vi normal mode; bindings are vi (see .zpreztorc)
+
+[directory]
+style = "blue"
+read_only = " "
+read_only_style = "red"
+truncation_length = 4
+truncate_to_repo = false
+
+[git_branch]
+symbol = " "
+style = "purple"
+
+[git_status]
+style = "red"
+
+[cmd_duration]
+# Disabled in 2022 and kept that way. Remove this to see how long slow commands
+# took; it only renders above a threshold, so it is not noisy.
+disabled = true
+
+[terraform]
+# Show the workspace, which the default format omits. Applies to OpenTofu too
+# (Brewfile.optional).
+format = "via [$symbol$workspace $version]($style) "
+
+[aws]
+symbol = " "
+style = "orange"
+# The oh-my-zsh aws plugin also wants to show the profile; SHOW_AWS_PROMPT=false
+# in .zshrc.d/80-misc.zsh turns that off so it isn't displayed twice.
+
+[buf]
+symbol = " "
+
+[c]
+symbol = " "
+
+[conda]
+symbol = " "
+
+[dart]
+symbol = " "
+
+[docker_context]
+symbol = " "
+
+[elixir]
+symbol = " "
+
+[elm]
+symbol = " "
+
+[golang]
+symbol = " "
+
+[haskell]
+symbol = " "
+
+[hg_branch]
+symbol = " "
+
+[java]
+symbol = " "
+style = "red"
+
+[julia]
+symbol = " "
+
+[memory_usage]
+symbol = " "
+
+[nim]
+symbol = " "
+
+[nix_shell]
+symbol = " "
+
+[nodejs]
+symbol = " "
+style = "green"
+
+[package]
+symbol = " "
+display_private = true
+
+[python]
+symbol = " "
+style = "yellow"
+
+[rust]
+symbol = " "
+
+[spack]
+symbol = "🅢 "

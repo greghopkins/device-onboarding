@@ -1,0 +1,8 @@
+# Build intermediates from 'make fonts': the unpacked Operator Mono archive, the
+# operator-mono-lig checkout, and a throwaway fonttools virtualenv.
+.build/
+
+# Note: fonts/HCo_OperatorMono.zip is deliberately NOT ignored. It is committed,
+# which is why this repo must stay private. See LICENSE-NOTICE.md.
+
+.DS_Store

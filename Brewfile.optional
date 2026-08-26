@@ -1,0 +1,18 @@
+# Opt-in tooling. Installed by 'make brew-optional', never by 'make all'.
+#
+# These are here rather than in the core Brewfile because they are large,
+# situational, or both. Promote anything you find yourself installing on every
+# machine into Brewfile.
+
+# --- containers --------------------------------------------------------------
+cask "orbstack"        # Docker/K8s runtime; lighter than Docker Desktop and
+                       # provides the `docker` CLI itself
+brew "docker-compose"
+brew "lazydocker"
+
+# --- cloud -------------------------------------------------------------------
+brew "awscli"
+brew "opentofu"        # Terraform fork under the Linux Foundation; the
+                       # starship.toml terraform module reads its state too
+brew "kubernetes-cli"
+brew "k9s"

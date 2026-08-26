@@ -1,0 +1,48 @@
+# direnv global configuration.
+#
+# The contract with mise (see docs/mise-direnv.md):
+#
+#   mise    tool versions and PATH
+#   direnv  environment variables, no PATH
+#
+# The functions below override direnv's stdlib PATH-manipulating helpers so that
+# using one fails loudly here instead of producing a confusing PATH-ordering bug
+# later. mise's maintainers do not treat mise/direnv incompatibilities as bugs,
+# so a clear error at the call site is the cheapest place to catch this.
+#
+# If you genuinely need one of these in a specific project, call the original
+# with its `direnv_` prefix (e.g. `direnv_layout_python`) so the override is an
+# explicit, visible decision rather than an accident.
+
+_mise_conflict() {
+  local helper="$1"
+  log_error "direnv: '$helper' manages PATH, which mise owns in this setup."
+  log_error "  Pin runtimes in mise.toml or .tool-versions instead."
+  log_error "  See docs/mise-direnv.md. To override deliberately: direnv_$helper"
+  return 1
+}
+
+# Preserve the originals under a prefixed name before shadowing them.
+if declare -f layout >/dev/null 2>&1; then
+  eval "direnv_layout() { $(declare -f layout | tail -n +2)"$'\n''}'
+fi
+if declare -f PATH_add >/dev/null 2>&1; then
+  eval "direnv_PATH_add() { $(declare -f PATH_add | tail -n +2)"$'\n''}'
+fi
+
+layout()   { _mise_conflict layout; }
+PATH_add() { _mise_conflict PATH_add; }
+
+# `use mise` was direnv's official mise integration. It is deprecated upstream
+# and no longer supported — defined here only so that copying an old .envrc
+# produces an explanation rather than "unknown command".
+use_mise() {
+  log_error "direnv: 'use mise' is deprecated upstream and unsupported."
+  log_error "  mise is activated directly in ~/.zshrc.d/45-mise.zsh."
+  log_error "  Remove this line from .envrc. See docs/mise-direnv.md."
+  return 1
+}
+
+# Load machine-local secrets if present. Keeps credentials out of the committed
+# .envrc; .envrc.local is in the global gitignore.
+dotenv_if_exists .envrc.local

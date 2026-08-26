@@ -1,0 +1,51 @@
+# Global gitignore (core.excludesfile).
+#
+# Changed from the 2022 version: .envrc and .tool-versions are no longer
+# ignored. Both are per-project files that belong in a project's repo — a
+# committed .envrc is how a team shares non-secret environment setup, and
+# .tool-versions is how mise pins runtimes for everyone. Ignoring them globally
+# meant they could never be committed anywhere. .envrc.local takes their place
+# here as the machine-local, secret-bearing counterpart.
+
+# --- macOS -------------------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# --- Windows (for repos shared with Windows machines) ------------------------
+Thumbs.db
+Desktop.ini
+
+# --- editors and tools -------------------------------------------------------
+# Vim swap and session files
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+# --- ctags / cscope ----------------------------------------------------------
+TAGS
+!TAGS/
+tags
+!tags/
+.tags
+.tags1
+gtags.files
+GTAGS
+GRTAGS
+GPATH
+cscope.files
+cscope.out
+cscope.in.out
+cscope.po.out
+
+# --- build artifacts ---------------------------------------------------------
+.sass-cache
+
+# --- local environment overrides ---------------------------------------------
+# Machine-local secrets for direnv. The project's .envrc should source this if
+# present and commit only the non-secret parts. See docs/mise-direnv.md.
+.envrc.local

@@ -1,0 +1,21 @@
+# Work identity.
+#
+# Applied to repositories under the work org directory by the includeIf rule at
+# the bottom of ~/.gitconfig.
+#
+# CHANGEME: set the values below, and update the matching directory in
+# ~/.gitconfig — the placeholder there is "CHANGEME-work-org".
+
+[user]
+	name = Greg Hopkins
+	email = ghopkins@gmail.com
+
+# Many employers require signed commits. To sign with an SSH key from the
+# Bitwarden agent, uncomment:
+#
+# [user]
+# 	signingkey = ssh-ed25519 CHANGEME
+# [gpg]
+# 	format = ssh
+# [commit]
+# 	gpgsign = true

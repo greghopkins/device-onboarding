@@ -1,0 +1,28 @@
+# Global mise configuration — machine-wide default runtime versions.
+#
+# This is the global config rather than a .tool-versions in the repo root,
+# because a repo-local file would only apply inside this repo. `mise ls
+# --current` in $HOME would come up empty and `node` would not exist anywhere
+# except here — not much use for a machine meant to be ready for development.
+#
+# Any project can still override these: a mise.toml or .tool-versions in a
+# project directory wins over this file. That is the entire point of using mise
+# instead of installing runtimes from Homebrew.
+#
+# node is not optional: scripts/install-fonts.sh needs it to run the Operator
+# Mono ligature patcher.
+#
+# mise owns tool versions and PATH. direnv must not. See docs/mise-direnv.md.
+
+[tools]
+node = "lts"
+python = "3.13"
+java = "temurin-21"
+
+[settings]
+# Fetch prebuilt Python binaries (python-build-standalone) instead of compiling
+# from source. Compiling takes several minutes; this takes seconds.
+python.compile = false
+
+# Don't nag about new mise releases on every shell start.
+not_found_auto_install = true

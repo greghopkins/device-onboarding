@@ -1,0 +1,15 @@
+# Overrides stow's built-in ignore list for this package.
+#
+# This file exists for one reason: stow's default ignore list includes
+# "\.gitignore", so `stow home` silently skips home/.gitignore — which is the
+# global git ignore file this repo is supposed to install. There is no warning;
+# the symlink just never appears.
+#
+# Providing this file REPLACES the built-in list entirely rather than adding to
+# it, so everything still to be ignored has to be relisted here.
+#
+# Patterns are Perl regexes, matched per path segment (or against the path
+# relative to this directory if the pattern contains a slash).
+
+\.DS_Store
+\.stow-local-ignore

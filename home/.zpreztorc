@@ -1,0 +1,101 @@
+#
+# Prezto options.
+#
+# Carried forward from the 2022 dotfiles repo with two changes, both noted
+# inline: the `ssh` module is gone, and the editor key bindings are now pure vi.
+#
+
+#
+# General
+#
+
+# Set case-sensitivity for completion, history lookup, etc.
+zstyle ':prezto:*:*' case-sensitive 'no'
+
+# Color output (auto set to 'no' on dumb terminals).
+zstyle ':prezto:*:*' color 'yes'
+
+#
+# Modules
+#
+# Order matters. Notes on specific entries:
+#
+#   homebrew    Still maintained upstream despite occasional claims otherwise.
+#               Runs `brew shellenv` with caching and sets FPATH, which is why
+#               .zshrc.d/10-homebrew.zsh only has to set one variable.
+#
+#   osx         Also still current upstream — it was never renamed to `macos`.
+#               Provides cdf/pushdf and friends. Not to be confused with the
+#               oh-my-zsh `macos` plugin loaded via zplug in .zshrc; they
+#               provide different things.
+#
+#   completion  Runs compinit. Nothing else should.
+#
+#   autosuggestions, syntax-highlighting
+#               Loaded here and ONLY here. Do not also add the standalone
+#               zsh-autosuggestions / zsh-syntax-highlighting plugins via
+#               zplug — the widgets get bound twice.
+#
+# Removed from the 2022 list:
+#
+#   ssh         Was configured to load 'personal' and 'work' identities with
+#               agent forwarding. Superseded by the Bitwarden SSH agent, which
+#               is wired up in .zshrc.d/95-bitwarden.zsh. Re-enabling this
+#               would start a second agent competing for SSH_AUTH_SOCK.
+#
+zstyle ':prezto:load' pmodule \
+  'environment' \
+  'terminal' \
+  'editor' \
+  'history' \
+  'directory' \
+  'spectrum' \
+  'utility' \
+  'completion' \
+  'autosuggestions' \
+  'archive' \
+  'osx' \
+  'syntax-highlighting' \
+  'history-substring-search' \
+  'homebrew' \
+  'command-not-found'
+
+#
+# Editor
+#
+
+# Pure vi bindings.
+#
+# The 2022 setup set this to 'vi' and then had key-bindings.zsh run `bindkey -v`
+# a second time before overriding ^a, ^e and ^r back to emacs behavior — a vi
+# mode with emacs muscle memory bolted on, fighting itself. Now it is vi, set
+# once, here. ^r history search is provided by the history-substring-search
+# module instead of a manual bindkey.
+zstyle ':prezto:module:editor' key-bindings 'vi'
+
+# Auto convert .... to ../..
+zstyle ':prezto:module:editor' dot-expansion 'yes'
+
+#
+# Syntax Highlighting
+#
+
+zstyle ':prezto:module:syntax-highlighting' highlighters \
+  'main' \
+  'brackets' \
+  'pattern' \
+  'cursor' \
+  'root'
+
+#
+# Terminal
+#
+
+# Auto set the tab and window titles.
+zstyle ':prezto:module:terminal' auto-title 'yes'
+
+#
+# Autosuggestions
+#
+
+zstyle ':prezto:module:autosuggestions' color 'yes'
