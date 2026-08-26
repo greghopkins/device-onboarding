@@ -143,6 +143,34 @@
 	enabled = true
 
 #
+# Push authentication over HTTPS, via the gh CLI.
+#
+# gh holds an OAuth token for the signed-in account, and this hands it to git so
+# `git push` works without a PAT in the keychain or a stored password.
+#
+# Why HTTPS rather than SSH, given the Bitwarden SSH agent exists:
+#
+#   - Outbound port 22 is blocked on at least one network this machine uses, so
+#     git@github.com times out. GitHub's ssh.github.com:443 endpoint is the
+#     workaround if you ever want SSH back.
+#   - The agent currently holds a work key. Pushing personal repos with it
+#     conflates two identities, which is the same problem the per-directory
+#     identity rules below exist to avoid.
+#
+# The empty `helper =` clears inherited helpers (macOS ships osxkeychain via the
+# system gitconfig) so gh is consulted first for GitHub rather than after a
+# keychain miss.
+#
+# Equivalent to `gh auth setup-git`, written out here so it is version
+# controlled and explained rather than silently appended.
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+#
 # Author identity, per directory.
 #
 # These MUST stay at the bottom of the file. Git applies configuration in the
