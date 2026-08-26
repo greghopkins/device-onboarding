@@ -5,10 +5,12 @@
 # machine into Brewfile.
 
 # --- containers --------------------------------------------------------------
-cask "orbstack"        # Docker/K8s runtime; lighter than Docker Desktop and
-                       # provides the `docker` CLI itself
-brew "docker-compose"
-brew "lazydocker"
+# The runtime moved to the core Brewfile (cask "docker-desktop"). OrbStack used to
+# be listed here and was removed rather than kept as an alternative: it provides
+# its own `docker` CLI and daemon, so having both installed means two runtimes
+# fighting over the same socket and CLI name. Same reason docker-compose is gone —
+# Docker Desktop ships Compose as a plugin, and the standalone formula shadows it.
+brew "lazydocker"      # TUI; no runtime of its own, so it layers cleanly
 
 # --- cloud -------------------------------------------------------------------
 brew "awscli"

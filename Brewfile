@@ -1,7 +1,9 @@
 # Core toolchain. Installed by 'make brew'.
 #
 # The baseline (Command Line Tools, git, Homebrew itself, Cursor, Claude) is
-# assumed present and deliberately not listed here. See README.md.
+# assumed present and deliberately not listed here. See README.md. git is the one
+# exception: Apple's build is needed to clone this repo in the first place, but it
+# is then superseded — see the git section below.
 #
 # Containers and cloud tooling live in Brewfile.optional.
 
@@ -32,11 +34,54 @@ brew "autoconf"
 # ruby-build also wants openssl@3 and readline; both already arrive as
 # dependencies of other formulas here, so they are not listed explicitly.
 
+# --- databases ---------------------------------------------------------------
+# Client only, deliberately. Projects here run Postgres as a container (censinet's
+# compose file builds from postgres:17.7 and publishes 5432), so installing
+# postgresql@17 would add a second server competing for that port — and one that
+# `brew services` is happy to start at login.
+#
+# libpq gives the client tools and the headers native gems build against; the
+# precompiled arm64-darwin `pg` gem bundles its own, but a source install needs
+# these. A newer client than server is the supported direction, so 18.x against
+# the 17.7 container is fine.
+#
+# Keg-only: nothing lands on PATH. The tools are at
+# $(brew --prefix)/opt/libpq/bin, and censinet puts them on PATH per-project via
+# its mise.macos.toml rather than globally.
+brew "libpq"          # psql, pg_dump, pg_restore
+
+# --- containers --------------------------------------------------------------
+# `docker-desktop` is the real cask token; `docker` is an alias for it, and the
+# `docker` *formula* is a different thing (CLI only, no runtime).
+#
+# Docker Desktop is free for personal use and for small businesses, but requires a
+# paid subscription above Docker's employee/revenue thresholds. Confirmed as fine
+# for this machine's use; revisit if that changes.
+#
+# Two things this cask does not do:
+#
+#   1. It does not adopt an existing install. If Docker.app is already in
+#      /Applications from a manual download, `brew bundle` fails with "It seems
+#      there is already an App at ...". Hand it over once with:
+#          brew install --cask --adopt docker-desktop
+#   2. It does not keep it updated. The cask is auto_updates, so Docker Desktop
+#      updates itself and `brew upgrade` leaves it alone.
+#
+# Compose is not listed separately: Docker Desktop bundles it as a CLI plugin
+# (v5.4.0 here), and the standalone docker-compose formula would shadow it.
+cask "docker-desktop"
+
 # --- navigation --------------------------------------------------------------
 brew "zoxide"     # replaces fasd (unmaintained since 2020)
 brew "fzf"
 
 # --- git ---------------------------------------------------------------------
+# Xcode's git shadows everything else on PATH and lags upstream: the CLT build on
+# this machine reported 2.50.1 (Apple Git-155). Apple also patches it, so version
+# numbers do not map cleanly onto upstream behavior. Installing it here puts a
+# current, unpatched git ahead of /usr/bin on PATH, which matters mainly for the
+# config knobs that the tools below expect to exist.
+brew "git"
 brew "gh"
 brew "git-delta"  # pager, replaces diff-so-fancy
 brew "git-lfs"
