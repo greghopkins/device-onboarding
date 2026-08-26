@@ -18,7 +18,7 @@ This repo starts from a machine that already has:
 | `git` | Needed to clone this repo in the first place |
 | Homebrew at `/opt/homebrew` | Bootstraps everything else; installing it needs its own sudo flow |
 | Cursor | Primary editor; `make cursor` configures it but does not install it |
-| Claude | Installed alongside Cursor |
+| Claude Desktop | GUI app, installed alongside Cursor. Does not include the `claude` CLI; that is `cask "claude-code"` in the Brewfile |
 
 Everything past that baseline is installed by this repo.
 

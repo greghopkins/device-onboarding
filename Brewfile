@@ -1,9 +1,11 @@
 # Core toolchain. Installed by 'make brew'.
 #
-# The baseline (Command Line Tools, git, Homebrew itself, Cursor, Claude) is
-# assumed present and deliberately not listed here. See README.md. git is the one
-# exception: Apple's build is needed to clone this repo in the first place, but it
-# is then superseded — see the git section below.
+# The baseline (Command Line Tools, git, Homebrew itself, Cursor, Claude Desktop)
+# is assumed present and deliberately not listed here. See README.md. git is the
+# one exception: Apple's build is needed to clone this repo in the first place,
+# but it is then superseded — see the git section below. Claude Desktop is the
+# other exception-that-isn't: it is the GUI app. Claude Code, the `claude` CLI,
+# is listed below and is a different product.
 #
 # Containers and cloud tooling live in Brewfile.optional.
 
@@ -90,6 +92,21 @@ brew "git-absorb"
 
 # --- editor ------------------------------------------------------------------
 brew "neovim"     # EDITOR/VISUAL, used for commit messages
+
+# --- AI coding CLI -----------------------------------------------------------
+# Claude Code, not Claude Desktop. The desktop app is baseline (a DMG, like
+# Cursor) and does not ship a `claude` binary. This cask does.
+#
+# Token is `claude-code`. `claude` is the desktop-app cask, which we do not
+# list: Homebrew will not adopt the existing /Applications/Claude.app without
+# --adopt, same trap as docker-desktop.
+#
+# Stable channel, not `claude-code@latest`. Stable trails by about a week and
+# skips releases with major regressions, which is the right default for a
+# machine-wide Brewfile. Homebrew does not auto-update this cask; `brew upgrade`
+# (or a re-run of `make brew`) is how it moves. Native `curl | bash` installs
+# auto-update instead, but live outside Homebrew.
+cask "claude-code"
 
 # --- modern CLI core ---------------------------------------------------------
 brew "bat"
