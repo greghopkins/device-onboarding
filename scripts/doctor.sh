@@ -14,17 +14,20 @@ pass=0; fail=0; warned=0
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; pass=$((pass+1)); }
 bad()  { printf '  \033[31m✗\033[0m %s\n' "$*"; fail=$((fail+1)); }
 warn() { printf '  \033[33m!\033[0m %s\n' "$*"; warned=$((warned+1)); }
-head() { printf '\n\033[1m%s\033[0m\n' "$*"; }
+# Named 'section', not 'head': a function called head shadows /usr/bin/head for
+# the whole script, so any `... | head -n` silently returns nothing and prints a
+# bold "-n" instead. That had already broken the error detail below.
+section() { printf '\n\033[1m%s\033[0m\n' "$*"; }
 
 # ---------------------------------------------------------------------------
-head "Homebrew packages"
+section "Homebrew packages"
 # ---------------------------------------------------------------------------
 for c in zsh starship mise direnv zoxide delta nvim stow gh jq bat eza fd rg; do
   if command -v "$c" >/dev/null 2>&1; then ok "$c"; else bad "$c not on PATH"; fi
 done
 
 # ---------------------------------------------------------------------------
-head "Symlinks"
+section "Symlinks"
 # ---------------------------------------------------------------------------
 while IFS= read -r -d '' src; do
   rel="${src#"$PKG_DIR"/}"
@@ -53,7 +56,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-head "Prezto"
+section "Prezto"
 # ---------------------------------------------------------------------------
 if [[ -s "$HOME/.zprezto/init.zsh" ]]; then
   ok "~/.zprezto/init.zsh"
@@ -69,7 +72,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-head "Fonts"
+section "Fonts"
 # ---------------------------------------------------------------------------
 FD="$HOME/Library/Fonts"
 for f in OperatorMonoLig-Book OperatorMonoLig-BookItalic \
@@ -83,10 +86,16 @@ ls "$FD"/FiraCodeNerdFontMono-*.ttf >/dev/null 2>&1 \
   && ok "FiraCode Nerd Font Mono" || bad "FiraCode Nerd Font Mono missing"
 
 # ---------------------------------------------------------------------------
-head "Shell startup"
+section "Shell startup"
 # ---------------------------------------------------------------------------
 if command -v zsh >/dev/null 2>&1; then
-  errs="$(zsh -i -c 'exit' 2>&1 | grep -v '^$' || true)"
+  # OSC sequences are stripped before judging. Run from inside iTerm2, the shell
+  # integration emits its RemoteHost/CurrentDir/ShellIntegrationVersion escapes at
+  # source time, which are terminal control rather than diagnostic output — left
+  # in, they make this check fail in iTerm2 and pass everywhere else.
+  errs="$(zsh -i -c 'exit' 2>&1 \
+    | perl -pe 's/\e\][^\a\e]*(?:\a|\e\\)//g' \
+    | grep -v '^$' || true)"
   if [[ -z "$errs" ]]; then
     ok "interactive zsh starts clean"
   else
@@ -112,7 +121,7 @@ if command -v zsh >/dev/null 2>&1; then
 fi
 
 # ---------------------------------------------------------------------------
-head "zplug plugins"
+section "zplug plugins"
 # ---------------------------------------------------------------------------
 # .zshrc gates `zplug check` behind a stamp file, so it no longer runs on every
 # shell start. That verification moves here: this is now the thing that catches a
@@ -162,7 +171,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-head "mise / direnv separation"
+section "mise / direnv separation"
 # ---------------------------------------------------------------------------
 if command -v mise >/dev/null 2>&1; then
   # Checked from $HOME: the pins are global, so they must resolve outside this
@@ -206,7 +215,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-head "Git identity"
+section "Git identity"
 # ---------------------------------------------------------------------------
 # gitdir: patterns are matched against resolved real paths. A symlinked ~/src
 # breaks every rule at once.
@@ -256,7 +265,7 @@ done < <(git config --global --name-only --get-regexp '^includeif\.' 2>/dev/null
   && ok "delta is the git pager" || warn "git pager is not delta"
 
 # ---------------------------------------------------------------------------
-head "Theming"
+section "Theming"
 # ---------------------------------------------------------------------------
 CURSOR_SETTINGS="$HOME/Library/Application Support/Cursor/User/settings.json"
 if [[ -f "$CURSOR_SETTINGS" ]] && command -v jq >/dev/null 2>&1; then
@@ -287,6 +296,47 @@ else
   warn "iTerm2 not pointed at the repo (run 'make iterm')"
 fi
 
+# --- iTerm2 shell integration ---
+if [[ -r "$HOME/.iterm2_shell_integration.zsh" ]]; then
+  if grep -q 'ShellIntegrationVersion' "$HOME/.iterm2_shell_integration.zsh"; then
+    ok "iTerm2 shell integration installed"
+  else
+    bad "~/.iterm2_shell_integration.zsh is not the real script (bad download?)"
+  fi
+
+  util_count="$(find "$HOME/.iterm2" -maxdepth 1 -type f -perm -u+x 2>/dev/null | wc -l | tr -d ' ')"
+  [[ "${util_count:-0}" -ge 16 ]] && ok "it2* utilities present ($util_count)" \
+    || warn "only ${util_count:-0} it2* utilities (expected 16; run 'make iterm-integration')"
+
+  # The fragment must sort AFTER the one that runs `starship init`, or the
+  # integration decorates a prompt Starship then overwrites and the OSC 133 marks
+  # disappear with no other symptom. Compare filenames rather than trusting the
+  # numbers to stay put.
+  prompt_frag="$(basename "$(grep -rl 'starship init' "$PKG_DIR/.zshrc.d/" 2>/dev/null | head -1)" 2>/dev/null)"
+  iterm_frag="$(basename "$(grep -rl 'iterm2_shell_integration' "$PKG_DIR/.zshrc.d/" 2>/dev/null | head -1)" 2>/dev/null)"
+  if [[ -n "$prompt_frag" && -n "$iterm_frag" ]]; then
+    if [[ "$iterm_frag" > "$prompt_frag" ]]; then
+      ok "$iterm_frag loads after $prompt_frag"
+    else
+      bad "$iterm_frag loads before $prompt_frag — OSC 133 marks will be lost"
+    fi
+  fi
+
+  # End-to-end: the marks only work if iterm2_precmd ends up after Starship's in
+  # precmd_functions. TERM_PROGRAM is forced because doctor may run anywhere.
+  order="$(TERM_PROGRAM=iTerm.app TERM=xterm-256color zsh -i -c \
+    'print -r -- "${precmd_functions[*]}"' 2>/dev/null | tail -1)"
+  if [[ "$order" == *prompt_starship_precmd*iterm2_precmd* ]]; then
+    ok "iterm2_precmd runs after starship's precmd"
+  elif [[ "$order" == *iterm2_precmd* ]]; then
+    bad "iterm2_precmd is registered before starship's precmd"
+  else
+    warn "could not confirm precmd order (integration did not load)"
+  fi
+else
+  warn "iTerm2 shell integration missing (run 'make iterm-integration')"
+fi
+
 grep -q 'palette = "onedark"' "$PKG_DIR/.config/starship.toml" 2>/dev/null \
   && ok "starship One Dark palette" || bad "starship palette not set"
 
@@ -314,7 +364,7 @@ if command -v starship >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse >/dev/nu
 fi
 
 # ---------------------------------------------------------------------------
-head "Login shell"
+section "Login shell"
 # ---------------------------------------------------------------------------
 shell="$(dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}')"
 case "$shell" in

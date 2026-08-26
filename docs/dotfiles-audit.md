@@ -92,8 +92,11 @@ One Dark syntax theme later.
 agent; re-enabling would start a second agent competing for `SSH_AUTH_SOCK`.
 
 **The vendored iTerm2 scripts** — 15 `it2*` helpers plus
-`.iterm2_shell_integration.zsh`, copied into the repo. Install from upstream
-instead of carrying a 2022 snapshot.
+`.iterm2_shell_integration.zsh`, copied into the repo. The *integration* is kept
+but no longer vendored: `make iterm-integration` fetches it and the helpers from
+upstream. Fetching turned out to be the right call on its own merits — upstream
+now ships 16 helpers, so the committed copy was already missing one (`it2cat`),
+and the script has since grown a `tmux-256color` case its guard lacked.
 
 **`.config/Lumina/`** — webcam software config, not dev tooling. It also
 contained a license key, user id, and email in plaintext.

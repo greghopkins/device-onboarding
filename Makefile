@@ -5,7 +5,7 @@ REPO_ROOT := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 BREW      := /opt/homebrew/bin/brew
 SCRIPTS   := $(REPO_ROOT)/scripts
 
-.PHONY: help all brew brew-optional mise fonts prezto link unlink relink iterm cursor shell doctor
+.PHONY: help all brew brew-optional mise fonts prezto link unlink relink iterm iterm-integration cursor shell doctor
 
 help: ## Show this help
 	@echo "device-onboarding"
@@ -13,7 +13,7 @@ help: ## Show this help
 	@echo "Usage: make <target>"
 	@echo
 	@grep -hE '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo
 	@echo "'make all' is idempotent and safe to re-run."
 	@echo "'make shell' is separate because it needs sudo."
@@ -21,7 +21,7 @@ help: ## Show this help
 # Order matters: link must precede mise (which reads the stowed global
 # ~/.config/mise/config.toml), and mise must precede fonts (whose ligature build
 # needs node).
-all: brew link prezto mise fonts iterm cursor ## Everything except the sudo step
+all: brew link prezto mise fonts iterm iterm-integration cursor ## Everything except the sudo step
 	@echo
 	@echo "Done. Run 'make shell' to set zsh as the login shell, then 'make doctor'."
 
@@ -54,6 +54,9 @@ relink: ## Re-stow (use after adding or renaming files in home/)
 
 iterm: ## Point iTerm2 at this repo's preferences
 	$(SCRIPTS)/configure-iterm2.sh
+
+iterm-integration: ## Fetch iTerm2 shell integration + it2* utilities from upstream
+	$(SCRIPTS)/install-iterm-integration.sh
 
 cursor: ## Install the One Dark Operator theme and set Cursor fonts
 	$(SCRIPTS)/configure-cursor.sh

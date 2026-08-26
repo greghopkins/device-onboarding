@@ -33,7 +33,8 @@ exec zsh
 make doctor
 ```
 
-`make all` runs `brew → link → prezto → mise → fonts → iterm → cursor`. Every
+`make all` runs
+`brew → link → prezto → mise → fonts → iterm → iterm-integration → cursor`. Every
 target is idempotent, so re-running it after editing a config is safe and cheap.
 
 The order is load-bearing in two places: `link` has to come before `mise`,
@@ -50,6 +51,7 @@ home/                 stowed into $HOME as symlinks (make link)
   .zshrc              load order: homebrew -> prezto -> zplug -> .zshrc.d
   .zpreztorc          Prezto module + option config
   .zshrc.d/*.zsh      numbered fragments, loaded last so they win
+                      92-iterm.zsh must sort after 90-prompt.zsh; see the file
   .gitconfig          global git config + per-org identity rules
   .gitignore          global ignore file
   .hushlogin          empty on purpose; silences login(1)'s "Last login:" banner
