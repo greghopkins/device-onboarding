@@ -138,6 +138,60 @@ mise install        # if mise.toml / .tool-versions is present
 direnv allow        # if .envrc is present; required once per file change
 ```
 
+## Idiomatic version files, and the Ruby trap
+
+mise calls files like `.ruby-version` and `.node-version` **idiomatic** version
+files, and it ignores every one of them unless the tool is explicitly listed in
+`idiomatic_version_file_enable_tools`. The default is an empty list.
+
+For Ruby that default is a trap. Essentially every Rails app ships a
+`.ruby-version` and no `mise.toml`, so a fresh checkout resolves to **no Ruby at
+all** — silently, with no hint that a version file was seen and skipped:
+
+```console
+$ cat .ruby-version
+3.3.6
+$ mise ls --current          # before opting in
+node    24.19.0   ~/.config/mise/config.toml
+python  3.13.15   ~/.config/mise/config.toml
+                             # ...no ruby
+```
+
+Hence, in `~/.config/mise/config.toml`:
+
+```toml
+[settings]
+idiomatic_version_file_enable_tools = ["ruby"]
+```
+
+Node is deliberately left out. `package.json`'s `engines` field, `.nvmrc` and
+`.node-version` disagree often enough that an explicit `mise.toml` is the less
+surprising option there.
+
+### Setting up a checked-out Rails app
+
+```sh
+cd myapp
+mise install        # reads .ruby-version, installs that Ruby
+bundle install
+bin/rails s
+```
+
+No `bundle exec` prefix and no rbenv-style `rehash`: `gem`, `bundle` and
+`bin/rails` all resolve through mise's shims to the project's Ruby.
+
+Two things worth knowing about the install step:
+
+- **Current Ruby is not compiled.** 3.3 and 4.0 arrive as prebuilt,
+  attestation-verified binaries in about five seconds. mise only falls back to
+  `ruby-build` for versions with no prebuilt (roughly 2.7 and older), which does
+  compile from source and even builds its own OpenSSL 1.1.1. The `Brewfile`
+  carries `libyaml` and `autoconf` for that case.
+- **Don't reach for `layout ruby`.** `~/.config/direnv/direnvrc` rejects it on
+  purpose, because it manipulates `PATH`, which mise owns. Use `.envrc` for
+  things like `RAILS_ENV` and `.envrc.local` for `RAILS_MASTER_KEY` or
+  `DATABASE_URL` — the latter is in the global gitignore.
+
 direnv refuses to load an `.envrc` it hasn't been told to trust, and re-asks
 whenever the file changes. That is a feature — an `.envrc` is arbitrary shell
 code from whoever wrote the repo.

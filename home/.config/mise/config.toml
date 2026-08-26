@@ -22,7 +22,30 @@ java = "temurin-21"
 [settings]
 # Fetch prebuilt Python binaries (python-build-standalone) instead of compiling
 # from source. Compiling takes several minutes; this takes seconds.
+#
+# Ruby needs no equivalent setting: current versions install as prebuilt
+# binaries by default, and mise only falls back to compiling with ruby-build for
+# versions that have none (roughly Ruby 2.7 and older). The Brewfile carries the
+# build dependencies for that fallback.
 python.compile = false
+
+# Honor .ruby-version.
+#
+# mise calls files like .ruby-version and .node-version "idiomatic" version
+# files, and ignores ALL of them unless the tool is listed here. The default is
+# an empty list, which is a trap for Ruby: essentially every Rails app ships a
+# .ruby-version and no mise.toml, so a fresh checkout would resolve to no Ruby
+# at all — silently, with no warning that a version file was skipped.
+#
+# Ruby is opted in because .ruby-version is the universal convention that
+# Bundler, CI and Heroku already read. The alternative is adding a mise.toml to
+# every repo you clone, which means committing your tooling choice to someone
+# else's project.
+#
+# Deliberately NOT opting in node: package.json's "engines" field and
+# .nvmrc/.node-version disagree often enough that being explicit in a mise.toml
+# is less surprising there.
+idiomatic_version_file_enable_tools = ["ruby"]
 
 # Don't nag about new mise releases on every shell start.
 not_found_auto_install = true

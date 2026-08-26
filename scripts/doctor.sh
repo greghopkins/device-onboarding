@@ -182,6 +182,22 @@ if [[ "$mise_line" -gt 0 && "$dir_line" -gt 0 ]]; then
 else
   bad "mise/direnv fragments not as expected"
 fi
+
+# .ruby-version is ignored unless ruby is opted in, and it fails silently: a
+# Rails checkout would resolve to no Ruby with no warning.
+if command -v mise >/dev/null 2>&1; then
+  if mise settings get idiomatic_version_file_enable_tools 2>/dev/null | grep -q ruby; then
+    ok "mise honors .ruby-version"
+  else
+    bad ".ruby-version is ignored; Rails checkouts will resolve to no Ruby"
+  fi
+fi
+for f in libyaml autoconf; do
+  brew list --formula "$f" >/dev/null 2>&1 \
+    && ok "ruby-build dep $f" \
+    || warn "ruby-build dep $f missing (only needed for Ruby <= 2.7)"
+done
+
 # POSIX ERE has no \s, so this uses an explicit space class.
 if grep -qE '^[[:space:]]*(layout|PATH_add)\(\)' "$HOME/.config/direnv/direnvrc" 2>/dev/null; then
   ok "direnvrc guards against PATH-manipulating helpers"
