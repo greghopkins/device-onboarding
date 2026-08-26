@@ -24,9 +24,17 @@
 #
 # LC_TERMINAL is checked too: iTerm2 forwards it over ssh, where TERM_PROGRAM is
 # not inherited.
+#
+# CURSOR_AGENT is a second gate, and it is not redundant with TERM_PROGRAM.
+# Cursor agent shells spawned from iTerm inherit TERM_PROGRAM=iTerm.app (and
+# often LC_TERMINAL), so the check above still matches. The integration then
+# poisons Cursor's zsh snapshot: iterm2_precmd / precmd wrapping leaves
+# dump_zsh_state undefined and produces `(eval):… parse error near '()'` on
+# every agent command. Skip sourcing so Cursor's own injector can define that
+# function. Utilities on PATH are harmless and stay.
 if [[ "$TERM_PROGRAM" == "iTerm.app" || "$LC_TERMINAL" == "iTerm2" ]]; then
-  if [[ -r "$HOME/.iterm2_shell_integration.zsh" ]]; then
-    source "$HOME/.iterm2_shell_integration.zsh"
+  if [[ -z "${CURSOR_AGENT:-}" ]]; then
+    [[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
   fi
 
   # The it2* helpers. Upstream aliases each one individually; a PATH entry is

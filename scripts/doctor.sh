@@ -324,7 +324,9 @@ if [[ -r "$HOME/.iterm2_shell_integration.zsh" ]]; then
 
   # End-to-end: the marks only work if iterm2_precmd ends up after Starship's in
   # precmd_functions. TERM_PROGRAM is forced because doctor may run anywhere.
-  order="$(TERM_PROGRAM=iTerm.app TERM=xterm-256color zsh -i -c \
+  # CURSOR_AGENT is cleared: agent shells inherit it, and the fragment skips
+  # sourcing in that case on purpose (see .zshrc.d/92-iterm.zsh).
+  order="$(CURSOR_AGENT= TERM_PROGRAM=iTerm.app TERM=xterm-256color zsh -i -c \
     'print -r -- "${precmd_functions[*]}"' 2>/dev/null | tail -1)"
   if [[ "$order" == *prompt_starship_precmd*iterm2_precmd* ]]; then
     ok "iterm2_precmd runs after starship's precmd"
@@ -332,6 +334,18 @@ if [[ -r "$HOME/.iterm2_shell_integration.zsh" ]]; then
     bad "iterm2_precmd is registered before starship's precmd"
   else
     warn "could not confirm precmd order (integration did not load)"
+  fi
+
+  # Cursor agents inherit iTerm's TERM_PROGRAM. If we still sourced the
+  # integration, Cursor's dump_zsh_state injector never gets to define the
+  # function. Force both env vars so this check is independent of where doctor
+  # itself is running.
+  skipped="$(CURSOR_AGENT=1 TERM_PROGRAM=iTerm.app TERM=xterm-256color zsh -i -c \
+    'print -r -- "${ITERM_SHELL_INTEGRATION_INSTALLED:-}"' 2>/dev/null | tail -1)"
+  if [[ -z "$skipped" ]]; then
+    ok "iTerm2 integration skipped when CURSOR_AGENT is set"
+  else
+    bad "iTerm2 integration still loads under CURSOR_AGENT (poisons Cursor agent shells)"
   fi
 else
   warn "iTerm2 shell integration missing (run 'make iterm-integration')"
