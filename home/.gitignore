@@ -49,17 +49,3 @@ cscope.po.out
 # Machine-local secrets for direnv. The project's .envrc should source this if
 # present and commit only the non-secret parts. See docs/mise-direnv.md.
 .envrc.local
-
-# mise's generated lockfile. Ignored while none of the repos in use track it, so
-# it would otherwise show up as untracked noise in every project.
-#
-# Note this is the opposite call from mise.toml and .tool-versions above, and the
-# distinction is intent vs. artifact: those files declare which versions a
-# project wants and belong to the project, whereas mise.lock is generated output
-# pinning exact resolved versions.
-#
-# Two things worth knowing:
-#   - A repo that DOES track mise.lock is unaffected. gitignore has no say over
-#     files git already tracks.
-#   - To commit one deliberately in your own project: git add -f mise.lock
-mise.lock
