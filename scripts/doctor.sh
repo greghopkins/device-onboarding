@@ -22,7 +22,7 @@ section() { printf '\n\033[1m%s\033[0m\n' "$*"; }
 # ---------------------------------------------------------------------------
 section "Homebrew packages"
 # ---------------------------------------------------------------------------
-for c in zsh starship mise direnv zoxide delta nvim stow gh jq bat eza fd rg claude; do
+for c in zsh starship mise direnv zoxide delta nvim stow gh jq bat eza fd rg claude uv; do
   if command -v "$c" >/dev/null 2>&1; then ok "$c"; else bad "$c not on PATH"; fi
 done
 

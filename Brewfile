@@ -108,6 +108,10 @@ brew "neovim"     # EDITOR/VISUAL, used for commit messages
 # auto-update instead, but live outside Homebrew.
 cask "claude-code"
 
+# `uvx` is what Cursor, Claude Desktop, and other MCP clients spawn for
+# Python MCP servers. One machine-wide binary; not a per-project runtime.
+brew "uv"
+
 # --- modern CLI core ---------------------------------------------------------
 brew "bat"
 brew "eza"
