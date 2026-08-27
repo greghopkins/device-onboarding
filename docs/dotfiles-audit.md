@@ -48,11 +48,12 @@ checks for it.
 - **The `.zshrc.d` fragment pattern** and `mattmc3/zshrc.d` as its loader.
 - **Eight of nine oh-my-zsh plugins** via zplug: git, macos, aliases, aws,
   zsh-navigation-tools, sudo, dirhistory, history.
-- **Starship** with its Nerd Font symbols and the terraform workspace format. One
-  Dark colors added. `cmd_duration` was carried over disabled but has since been
-  re-enabled above a 2s threshold: the censinet monorepo's terragrunt runs, `uv
-  sync`, and Rails suites are slow enough that the timing is worth seeing, which
-  was not true of the 2022 workload.
+- **Starship** with the `nerd-font-symbols` preset (escapes, not pasted glyphs)
+  plus the terraform workspace format. One Dark colors added. `cmd_duration` was
+  carried over disabled but has since been re-enabled above a 2s threshold: the
+  censinet monorepo's terragrunt runs, `uv sync`, and Rails suites are slow
+  enough that the timing is worth seeing, which was not true of the 2022
+  workload.
 - **The full `.gitconfig`** — see the deferred audit below.
 - **The global `.gitignore`**, minus two entries (see below).
 - **The iTerm2 plist**, including its One Dark preset and hotkey window profile.
@@ -62,6 +63,28 @@ checks for it.
   `SPROMPT`, JetBrains Toolbox on `PATH`.
 
 ## Dropped
+
+**`Aloxaf/fzf-tab`** — tried as the Tab completion menu (own repo via zplug, not
+oh-my-zsh, skipped in Cursor agent shells). It works: Tab opens fzf, groups
+colorize, `cd`/`z` can preview with eza. What it looks like is the problem.
+
+Prezto's completion module sets
+
+```zsh
+zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+```
+
+fzf-tab's own README says not to put zsh prompt escapes in that format — fzf
+cannot interpret `%F`/`%f`, so the group headers render as literal
+`%F{yellow}-- external command --%f` in both iTerm2 and Cursor's terminal.
+Overriding only `:descriptions` to `[%d]` (the upstream snippet) does not win
+over Prezto's generic `format` style. Fixing it means restyling Prezto's
+completion module for a widget we would use a few times a day. Not worth it.
+
+`fzf` stays in the Brewfile as a binary (`fzf`, `zoxide` `zi`). It is not
+hooked into Tab, Ctrl-T, or Ctrl-R. A clone may still sit in
+`~/.zplug/repos/Aloxaf/fzf-tab`; `rm -rf` that directory if you want it gone.
 
 **`fasd`** — unmaintained since 2020, replaced by zoxide. The `z`/`zz` aliases
 carry over; `a`/`s`/`f` (which matched *files*, not just directories) have no

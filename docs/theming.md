@@ -37,20 +37,19 @@ variant, which no longer exists in the current cask. It is now
 
 ### Starship
 
-The One Dark palette is the only color addition; the Nerd Font symbols came from
-the 2022 config. Those symbols are written as `\uXXXX` escapes rather than pasted
-literally, which is worth preserving:
+The One Dark palette is ours. The Nerd Font symbols are Starship's
+`nerd-font-symbols` preset (pinned to whatever `starship preset` dumps for the
+installed version), written as `\uXXXX` / `\UXXXXXXXX` escapes rather than
+pasted literals:
 
 - The glyphs live in the Unicode Private Use Area, so they are invisible in most
   editors and a lost glyph looks exactly like a plain space — including in a
   diff. All 23 symbols were blanked at one point, and the only visible sign was a
   gap where the branch icon should have been.
-- Nerd Fonts v3 relocated the Material Design range (`F500-FD46` to
-  `F0001-F1AF0`). Five symbols carried over from 2022 pointed at codepoints that
-  no longer exist and rendered blank even when the glyph was intact:
-  `read_only`, `memory_usage`, `nim`, `package`, and `spack`. The first four now
-  use their v3 equivalents; the `spack` module was dropped, since its symbol was
-  never a Nerd Font glyph at all.
+- Do not `starship preset nerd-font-symbols -o` this file. That command
+  overwrites the whole config and would drop the palette, `cmd_duration`, AWS
+  aliases, and the terraform workspace format.
+- `[os.symbols]` from the preset is omitted: the os module is off by default.
 
 `doctor.sh` checks both halves of this: that the config still declares glyphs,
 and that they survive into the rendered prompt.
@@ -110,7 +109,10 @@ muscle memory. Theming directory listings means generating an `LS_COLORS` value
 
 ### fzf
 
-Colors are passed as flags, not a config file:
+Colors are passed as flags, not a config file. Nothing currently exports these;
+`fzf` is in the Brewfile but is not hooked into the shell. Aloxaf/fzf-tab was
+tried as a Tab menu and dropped — Prezto's `%F{yellow}-- %d --%f` group headers
+render as literal text inside fzf. See [dotfiles-audit.md](dotfiles-audit.md).
 
 ```sh
 export FZF_DEFAULT_OPTS="--color=bg+:#3e4451,bg:#282c34,fg:#abb2bf,fg+:#ffffff,\
