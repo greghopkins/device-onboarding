@@ -118,6 +118,22 @@ if command -v zsh >/dev/null 2>&1; then
   else
     ok "no tilde-prefixed fragments"
   fi
+
+  # Cursor agent shells dump `typeset -f` from an interactive login zsh and
+  # later eval it with aliases disabled (`unsetopt aliases; unalias -m '*'`).
+  # omz_urlencode's original quoting does not survive that round-trip.
+  # See ~/.zsh/omz-urlencode.zsh. Aliases stay off in this check: with them
+  # on, `run-help` is both an alias and a function and eval fails for a
+  # different reason Cursor does not hit.
+  _fn_dump="$(mktemp)"
+  if TERM_PROGRAM=vscode CURSOR_AGENT= zsh -o extendedglob -ilc 'builtin typeset -f' >"$_fn_dump" 2>/dev/null \
+     && zsh --no-rcs -c 'builtin unsetopt aliases; builtin unalias -m "*" 2>/dev/null || true; builtin eval "$(command cat "$1")"' -- "$_fn_dump" 2>/dev/null; then
+    ok "zsh function dump round-trips (Cursor agent snapshots)"
+  else
+    bad "typeset -f dump does not eval — Cursor agents will hit parse error near ()"
+  fi
+  rm -f "$_fn_dump"
+  unset _fn_dump
 fi
 
 # ---------------------------------------------------------------------------

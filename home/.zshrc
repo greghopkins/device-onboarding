@@ -149,3 +149,10 @@ else
   done
   unset _frag
 fi
+
+# After zplug load. oh-my-zsh's lib/functions.zsh is sourced once per
+# from:oh-my-zsh plugin and overwrites anything that ran inside .zshrc.d.
+# See ~/.zsh/omz-urlencode.zsh for why Cursor agents need this.
+if [[ -r "$HOME/.zsh/omz-urlencode.zsh" ]]; then
+  source "$HOME/.zsh/omz-urlencode.zsh"
+fi

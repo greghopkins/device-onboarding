@@ -49,6 +49,10 @@ Run `make` with no arguments for the full target list.
 ```
 home/                 stowed into $HOME as symlinks (make link)
   .zshrc              load order: homebrew -> prezto -> zplug -> .zshrc.d
+  .zsh/omz-urlencode.zsh
+                      sourced from .zshrc AFTER zplug load; dump-safe quoting
+                      so Cursor agent snapshots can eval (see the file)
+  .zpreztorc          Prezto module + option config
   .zpreztorc          Prezto module + option config
   .zshrc.d/*.zsh      numbered fragments, loaded last so they win
                       92-iterm.zsh must sort after 90-prompt.zsh; see the file
