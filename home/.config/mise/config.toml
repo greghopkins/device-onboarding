@@ -18,6 +18,10 @@
 node = "lts"
 python = "3.13"
 java = "temurin-21"
+# Same major as censinet's root mise.toml. Project pins still win inside that
+# repo. Global so `aws` and `aws_completer` exist outside it — Tab completion
+# and `aws ssm` from $HOME both need the binary on PATH, not just in one clone.
+aws = "2"
 
 [settings]
 # Fetch prebuilt Python binaries (python-build-standalone) instead of compiling

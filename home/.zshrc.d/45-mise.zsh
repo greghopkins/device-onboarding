@@ -19,3 +19,7 @@
 if (( $+commands[mise] )); then
   eval "$(mise activate zsh)"
 fi
+
+# Completers for aws/terraform/kubectl are registered from ~/.zshrc AFTER
+# zplug load. They cannot live in this directory: zplug re-runs compinit
+# after sourcing fragments and would wipe the bind. See ~/.zsh/tool-completions.zsh.

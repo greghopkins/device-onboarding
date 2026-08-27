@@ -26,6 +26,12 @@ for c in zsh starship mise direnv zoxide delta nvim stow gh jq bat eza fd rg cla
   if command -v "$c" >/dev/null 2>&1; then ok "$c"; else bad "$c not on PATH"; fi
 done
 
+if command -v granted >/dev/null 2>&1; then
+  ok "granted"
+else
+  warn "granted not on PATH (make brew-optional) — AWS profile switching is assume(1)"
+fi
+
 # ---------------------------------------------------------------------------
 section "Symlinks"
 # ---------------------------------------------------------------------------
@@ -192,7 +198,7 @@ section "mise / direnv separation"
 if command -v mise >/dev/null 2>&1; then
   # Checked from $HOME: the pins are global, so they must resolve outside this
   # repo. If they only worked here, node would not exist machine-wide.
-  for t in node python java; do
+  for t in node python java aws; do
     if (cd "$HOME" && mise which "$t" >/dev/null 2>&1); then
       ok "mise provides $t globally"
     else
@@ -391,6 +397,33 @@ if command -v starship >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse >/dev/nu
     | LC_ALL=C tr -d '\000-\177' | wc -c | tr -d ' ')"
   [[ "${glyph_bytes:-0}" -gt 0 ]] && ok "starship renders the git branch glyph" \
     || bad "starship git branch glyph renders blank"
+fi
+
+# Granted's installer writes `alias assume=source ...` into ~/.zshenv, which
+# runs for every zsh including scripts. The bind belongs in 46-granted.zsh.
+if [[ -f "$HOME/.zshenv" ]] && grep -qE 'alias assume=.*assume' "$HOME/.zshenv" 2>/dev/null; then
+  bad "~/.zshenv contains a Granted assume alias (owned by .zshrc.d/46-granted.zsh)"
+fi
+
+if command -v granted >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
+  assume_kind="$(CURSOR_AGENT= zsh -i -c 'whence -w assume' 2>/dev/null | tail -1)"
+  if [[ "$assume_kind" == *' function' ]]; then
+    ok "assume is a shell function (exports into this shell)"
+  else
+    bad "assume is ${assume_kind:-missing} (expected a function from 46-granted.zsh)"
+  fi
+fi
+
+# aws_completer is a global mise tool. Binding it in a .zshrc.d fragment is
+# wiped by zplug's second compinit; ~/.zsh/tool-completions.zsh is sourced
+# after zplug load so this must be a real _bash_complete entry, not files.
+if command -v zsh >/dev/null 2>&1; then
+  aws_comp="$(CURSOR_AGENT= zsh -i -c 'print -r -- "${_comps[aws]}"' 2>/dev/null | tail -1)"
+  if [[ "$aws_comp" == *_bash_complete*aws_completer* ]]; then
+    ok "aws Tab completion uses aws_completer"
+  else
+    bad "aws Tab completion is ${aws_comp:-unset} (expected _bash_complete -C aws_completer)"
+  fi
 fi
 
 # ---------------------------------------------------------------------------

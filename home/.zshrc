@@ -12,7 +12,9 @@
 #   1. Homebrew   — everything below lives under $HOMEBREW_PREFIX
 #   2. Prezto     — the base framework (see .zpreztorc)
 #   3. zplug      — plugin manager; declares the oh-my-zsh borrowings
-#   4. .zshrc.d/  — personal fragments, loaded last so they win
+#   4. .zshrc.d/  — personal fragments (zplug sources these, then re-runs
+#                   compinit — so anything that must survive that bind
+#                   lives in ~/.zsh/*.zsh sourced after zplug load)
 #
 
 # ---------------------------------------------------------------------------
@@ -155,4 +157,9 @@ fi
 # See ~/.zsh/omz-urlencode.zsh for why Cursor agents need this.
 if [[ -r "$HOME/.zsh/omz-urlencode.zsh" ]]; then
   source "$HOME/.zsh/omz-urlencode.zsh"
+fi
+
+# After zplug load, including zplug's second compinit. See the file.
+if [[ -r "$HOME/.zsh/tool-completions.zsh" ]]; then
+  source "$HOME/.zsh/tool-completions.zsh"
 fi

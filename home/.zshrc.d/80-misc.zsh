@@ -53,7 +53,8 @@ export GREP_COLOR='1;33'
 # --- aws prompt --------------------------------------------------------------
 # Stops the oh-my-zsh aws plugin from injecting the current profile into the
 # prompt. Starship's `aws` module handles that instead, so leaving this unset
-# would show the profile twice.
+# would show the profile twice. Switching profiles is Granted's `assume`
+# (46-granted.zsh), not the plugin's `asp`.
 export SHOW_AWS_PROMPT=false
 
 # --- JetBrains Toolbox -------------------------------------------------------

@@ -52,9 +52,13 @@ home/                 stowed into $HOME as symlinks (make link)
   .zsh/omz-urlencode.zsh
                       sourced from .zshrc AFTER zplug load; dump-safe quoting
                       so Cursor agent snapshots can eval (see the file)
+  .zsh/tool-completions.zsh
+                      same timing: zplug re-runs compinit after fragments,
+                      so aws/terraform complete -C must bind after that
   .zpreztorc          Prezto module + option config
   .zpreztorc          Prezto module + option config
   .zshrc.d/*.zsh      numbered fragments, loaded last so they win
+                      46-granted.zsh: `assume` for AWS SSO (not ~/.zshenv)
                       92-iterm.zsh must sort after 90-prompt.zsh; see the file
   .gitconfig          global git config + per-org identity rules
   .gitignore          global ignore file

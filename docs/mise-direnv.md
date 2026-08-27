@@ -20,6 +20,7 @@ Machine-wide defaults are in `home/.config/mise/config.toml`, stowed to
 node = "lts"
 python = "3.13"
 java = "temurin-21"
+aws = "2"
 ```
 
 They are **global** rather than a `.tool-versions` in this repo's root on
