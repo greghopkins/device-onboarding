@@ -412,6 +412,12 @@ if command -v granted >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
   else
     bad "assume is ${assume_kind:-missing} (expected a function from 46-granted.zsh)"
   fi
+  assume_comp="$(CURSOR_AGENT= zsh -i -c 'print -r -- ${_comps[assume]}' 2>/dev/null | tail -1)"
+  if [[ "$assume_comp" == _onboarding_assume ]]; then
+    ok "assume Tab completion uses Granted's flag generator"
+  else
+    bad "assume Tab completion is ${assume_comp:-unset} (expected _onboarding_assume)"
+  fi
 fi
 
 # aws_completer is a global mise tool. Binding it in a .zshrc.d fragment is

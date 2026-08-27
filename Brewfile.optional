@@ -20,7 +20,7 @@ brew "lazydocker"      # TUI; no runtime of its own, so it layers cleanly
 cask "session-manager-plugin"
 # Profile switcher for AWS SSO. `assume` is a sourced wrapper (see
 # home/.zshrc.d/46-granted.zsh); do not let `granted completion -s zsh`
-# write an alias into ~/.zshenv.
+# write fpath into ~/.zshenv — tool-completions.zsh calls assumego instead.
 brew "granted"
 brew "opentofu"        # Terraform fork under the Linux Foundation; the
                        # starship.toml terraform module reads its state too

@@ -22,8 +22,9 @@
 #   assume -c               open the AWS console for the current/picked profile
 #   assume -u               clear Granted's env vars
 #
-# Do not run `granted completion -s zsh`: it appends to ~/.zshenv.
-# Completions are registered from ~/.zsh/tool-completions.zsh after zplug load.
+# Do not run `granted completion -s zsh`: it appends fpath to ~/.zshenv.
+# Flag/profile completions call assumego --generate-bash-completion from
+# ~/.zsh/tool-completions.zsh after zplug load.
 #
 
 if (( $+commands[assumego] )); then
