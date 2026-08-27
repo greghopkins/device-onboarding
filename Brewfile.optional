@@ -14,6 +14,11 @@ brew "lazydocker"      # TUI; no runtime of its own, so it layers cleanly
 
 # --- cloud -------------------------------------------------------------------
 brew "awscli"
+# Required by the AWS CLI for `aws ssm start-session` and ECS Exec (censinet's
+# `aws:console` task). Official install is a signed .pkg; this cask wraps that
+# same artifact. Dead without a working `aws` binary, so it lives here rather
+# than in the core Brewfile.
+cask "session-manager-plugin"
 brew "opentofu"        # Terraform fork under the Linux Foundation; the
                        # starship.toml terraform module reads its state too
 brew "kubernetes-cli"
