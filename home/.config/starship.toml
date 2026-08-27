@@ -1,31 +1,21 @@
 # Starship prompt.
 #
-# Carried forward from the 2022 dotfiles repo, which set Nerd Font symbols but
-# no colors. The One Dark palette below is the addition.
+# Symbols come from Starship's `nerd-font-symbols` preset (starship 1.26.0),
+# written as \uXXXX / \UXXXXXXXX escapes so Private Use Area glyphs cannot
+# silently become spaces in a diff — which happened once with pasted literals.
 #
-# ---------------------------------------------------------------------------
-# Why every glyph is written as a \uXXXX escape
+# The preset is symbols only. Everything below that is not a `symbol` /
+# `read_only` / `tag_symbol` key is ours: One Dark palette, styles, cmd_duration,
+# terraform workspace format, AWS expiration + profile_aliases.
 #
-# These symbols live in the Unicode Private Use Area (E000-F8FF and F0000+).
-# Pasted literally they are invisible in most editors, indistinguishable from a
-# plain space in a diff, and trivially lost by any tool that touches the file --
-# which is exactly what happened once here, silently blanking all 23 symbols and
-# leaving a suspicious gap before the branch name.
+# `[os.symbols]` from the preset is omitted: the os module is off by default
+# and that table is fifty Linux distro logos this machine will never show.
 #
-# TOML basic strings support \uXXXX (4 hex digits) and \UXXXXXXXX (8 digits, for
-# codepoints above U+FFFF). Escapes are pure ASCII, so they survive anything,
-# and the glyph name in the trailing comment says what each one should look
-# like.
+# To refresh symbols after a Starship upgrade:
+#   starship preset nerd-font-symbols
+# then re-merge; do not `starship preset … -o` this file or the palette dies.
 #
-# To verify a codepoint actually exists in the installed font:
-#   python -c "from fontTools.ttLib import TTFont; \
-#     f=TTFont('~/Library/Fonts/FiraCodeNerdFontMono-Retina.ttf'); \
-#     print(any(0xF418 in t.cmap for t in f['cmap'].tables))"
-#
-# Nerd Fonts v3 relocated the Material Design range (F500-FD46 -> F0001-F1AF0),
-# so five symbols from the 2022 config pointed at codepoints that no longer
-# exist and rendered blank. Those are noted inline below.
-# ---------------------------------------------------------------------------
+# Glyph names in comments are from FiraCode Nerd Font Mono Retina's cmap.
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
@@ -52,131 +42,280 @@ vicmd_symbol = "[❮](purple)"   # vi normal mode; bindings are vi (see .zprezto
 
 [directory]
 style = "blue"
-read_only = " \uf456"          # oct-lock. Was U+F83D, which v3 removed.
+read_only = " \U000F033E"             # md-lock
 read_only_style = "red"
 truncation_length = 4
 truncate_to_repo = false
 
 [git_branch]
-symbol = "\uf418 "             # oct-git_branch
+symbol = "\uF418 "             # oct-git_branch
 style = "purple"
 
 [git_status]
 style = "red"
 
+[git_commit]
+tag_symbol = " \uF412 "             # oct-tag
+
 [cmd_duration]
-# Disabled in 2022, re-enabled because the work changed: terragrunt runs, `uv sync
-# --all-packages`, `hk check`, and Rails test suites all take long enough that
-# knowing after the fact is useful. Nothing renders below the threshold, so fast
-# commands are unaffected.
+# Re-enabled above a 2s threshold: terragrunt, uv sync, hk check, Rails suites.
+# Nothing renders below the threshold, so fast commands are unaffected.
 min_time = 2_000
 style = "grey"
 format = "took [$duration]($style) "
 
 [terraform]
-# Show the workspace, which the default format omits. Applies to OpenTofu too
-# (Brewfile.optional).
+# Show the workspace, which the default format omits. Applies to OpenTofu too.
+symbol = "\uE69A "             # seti-terraform
 format = "via [$symbol$workspace $version]($style) "
 
 [aws]
-symbol = "\ue33d "             # dev-aws
+symbol = "\uF0EF "             # fa-aws
 style = "orange"
-# The oh-my-zsh aws plugin also wants to show the profile; SHOW_AWS_PROMPT=false
-# in .zshrc.d/80-misc.zsh turns that off so it isn't displayed twice.
-#
-# Shown when credentials expire. Worth having with AWS SSO, where the failure
-# otherwise arrives as an opaque API error partway through a command.
-expiration_symbol = "\uf071 "  # fa-warning
+# oh-my-zsh aws plugin is silenced via SHOW_AWS_PROMPT=false in 80-misc.zsh.
+expiration_symbol = "\uF071 "             # fa-warning
+# expiration_symbol is ours (not in the preset). Worth having with AWS SSO.
 
-# Make production unmistakable.
-#
-# starship cannot style this module conditionally on the profile name, so the
-# loudness has to live in the text itself. profile_aliases rewrites the displayed
-# string and costs nothing at runtime, unlike a [custom] module, which would spawn
-# a subprocess on every prompt.
-#
-# These are placeholders — no profiles are configured on this machine yet. Replace
-# the keys with real profile names; the key must match exactly, so add one line per
-# production profile rather than expecting a pattern to match.
-#
-# Note that the whole module stays hidden until ~/.aws/config actually defines the
-# profile with credentials, a credential_process, or an SSO session. Exporting
-# AWS_PROFILE alone renders nothing, so this looks broken before AWS is set up.
+# Make production unmistakable. starship cannot style this module by profile
+# name, so the loudness lives in the displayed text. Keys match exactly.
+# The module stays hidden until ~/.aws/config defines the profile.
 [aws.profile_aliases]
 # censinet-production = "\uf071 PRODUCTION"
 # censinet-prod       = "\uf071 PRODUCTION"
 
+[azure]
+symbol = "\uE754 "             # dev-azure
+
+[battery]
+full_symbol = "\U000F0079 "             # md-battery
+charging_symbol = "\U000F0084 "             # md-battery_charging
+discharging_symbol = "\U000F0083 "             # md-battery_alert
+unknown_symbol = "\U000F0091 "             # md-battery_unknown
+empty_symbol = "\U000F008E "             # md-battery_outline
+
 [buf]
-symbol = "\uf49d "             # oct-package (buf has no dedicated glyph)
+symbol = "\uF49D "             # oct-bold
+
+[bun]
+symbol = "\uE76F "             # dev-bun
 
 [c]
-symbol = "\ue61e "             # custom-c
+symbol = "\uE61E "             # custom-c
+
+[cpp]
+symbol = "\uE61D "             # custom-cpp
+
+[cmake]
+symbol = "\uE794 "             # dev-cmake
+
+[cobol]
+symbol = "\uF013 "             # fa-gear
 
 [conda]
-symbol = "\uf10c "             # fa-circle_o
+symbol = "\uE715 "             # dev-anaconda
+
+[container]
+symbol = "\uF4B7 "             # oct-container
+
+[crystal]
+symbol = "\uE62F "             # seti-crystal
 
 [dart]
-symbol = "\ue798 "             # dev-dart
+symbol = "\uE64C "             # seti-dart
+
+[deno]
+symbol = "\uE7C0 "             # dev-denojs
+
+[direnv]
+symbol = "\uE613 "             # seti-folder
 
 [docker_context]
-symbol = "\uf308 "             # linux-docker
+symbol = "\uF308 "             # linux-docker
+
+[dotnet]
+symbol = "\uE77F "             # dev-dotnet
 
 [elixir]
-symbol = "\ue275 "             # custom-elixir
+symbol = "\uE62D "             # seti-elixir
 
 [elm]
-symbol = "\ue62c "             # custom-elm
+symbol = "\uE62C "             # seti-elm
+
+[erlang]
+symbol = "\uF23F "             # fa-erlang
+
+[fennel]
+symbol = "\uE6AF "             # custom-fennel
+
+[fortran]
+symbol = "\uE7DE "             # dev-fortran
+
+[fossil_branch]
+symbol = "\uF418 "             # oct-git_branch
+
+[gcloud]
+symbol = "\U000F11F6 "             # md-google_cloud
+
+[gleam]
+symbol = "\uF005 "             # fa-star
 
 [golang]
-symbol = "\ue627 "             # seti-go
+symbol = "\uE627 "             # seti-go
+
+[gradle]
+symbol = "\uE660 "             # seti-gradle
+
+[guix_shell]
+symbol = "\uF325 "             # linux-gnu_guix
 
 [haskell]
-symbol = "\ue777 "             # dev-haskell
+symbol = "\uE777 "             # dev-haskell
+
+[haxe]
+symbol = "\uE666 "             # seti-haxe
+
+[helm]
+symbol = "\uE7FB "             # dev-helm
 
 [hg_branch]
-symbol = "\uf418 "             # oct-git_branch
+symbol = "\uF418 "             # oct-git_branch
+
+[hostname]
+ssh_symbol = "\uEB01 "             # cod-globe
 
 [java]
-symbol = "\ue256 "             # dev-java
+symbol = "\uE738 "             # dev-java
 style = "red"
 
 [julia]
-symbol = "\ue624 "             # seti-julia
+symbol = "\uE624 "             # seti-julia
+
+[kotlin]
+symbol = "\uE634 "             # seti-kotlin
+
+[kubernetes]
+symbol = "\U000F10FE "             # md-kubernetes
+
+[lua]
+symbol = "\uE620 "             # seti-lua
+
+[maven]
+symbol = "\uE674 "             # seti-maven
 
 [memory_usage]
-symbol = "\U000F035B "         # md-memory. Was U+F85A, which v3 relocated.
+symbol = "\U000F035B "             # md-memory
+
+[meson]
+symbol = "\U000F0537 "             # md-triangle_outline
+
+[mojo]
+symbol = "\U000F0238 "             # md-fire
+
+[nats]
+symbol = "\uF0E0 "             # fa-envelope
+
+[netns]
+symbol = "\U000F06F3 "             # md-network
 
 [nim]
-symbol = "\ue841 "             # dev-nim. Was U+F6A4 (a crown); the real Nim
-                               # logo is both correct and actually present.
+symbol = "\uE677 "             # seti-nim
 
 [nix_shell]
-symbol = "\uf2dc "             # fa-snowflake_o
+symbol = "\uF313 "             # linux-nixos
 
 [nodejs]
-symbol = "\ue718 "             # dev-nodejs_small
+symbol = "\uE718 "             # dev-nodejs_small
 style = "green"
 
+[ocaml]
+symbol = "\uE67A "             # seti-ocaml
+
+[odin]
+symbol = "\U000F07E2 "             # md-null
+
+[opa]
+symbol = "\uF132 "             # fa-shield
+
+[openstack]
+symbol = "\uE856 "             # dev-openstack
+
 [package]
-symbol = "\uf487 "             # oct-package. Was U+F8D6, which v3 relocated.
+symbol = "\U000F03D7 "             # md-package_variant_closed
 display_private = true
 
+[perl]
+symbol = "\uE67E "             # seti-perl
+
+[php]
+symbol = "\uE608 "             # seti-php
+
+[pijul_channel]
+symbol = "\uF418 "             # oct-git_branch
+
+[pixi]
+symbol = "\U000F03D7 "             # md-package_variant_closed
+
+[pulumi]
+symbol = "\uE873 "             # dev-pulumi
+
+[purescript]
+symbol = "\uE630 "             # seti-purescript
+
 [python]
-symbol = "\ue235 "             # fae-python
+symbol = "\uE235 "             # fae-python
 style = "yellow"
 
+[raku]
+symbol = "\U000F158A "             # md-butterfly_outline
+
+[red]
+symbol = "\U000F137C "             # md-traffic_cone
+
+[rlang]
+symbol = "\U000F07D4 "             # md-language_r
+
 [ruby]
-# Without this, starship falls back to its default 💎 emoji — the only module not
-# using a Nerd Font glyph, and unreliable besides, since iTerm2 has non-ASCII font
-# fallback turned off (see docs/theming.md). This is the most-seen module in the
-# censinet monorepo, whose server/ root is Ruby.
-symbol = "\ue739 "             # dev-ruby
+symbol = "\uE791 "             # dev-ruby_rough
 style = "red"
 
 [rust]
-symbol = "\ue7a8 "             # dev-rust
+symbol = "\U000F1617 "             # md-language_rust
 
-# The 2022 config also set a [spack] symbol using U+1F162 (the enclosed letter
-# S), which is not a Nerd Font glyph and is absent from FiraCode. Dropped rather
-# than fixed: spack is an HPC package manager, and the module only renders inside
-# a spack environment.
+[scala]
+symbol = "\uE737 "             # dev-scala
+
+[shlvl]
+symbol = "\U000F0E4D "             # md-layers_plus
+
+[singularity]
+symbol = "\uF4B7 "             # oct-container
+
+[solidity]
+symbol = "\uE8A6 "             # dev-solidity
+
+[spack]
+symbol = "\uE8AA "             # dev-spack
+
+[status]
+symbol = "\uF467 "             # oct-x
+
+[sudo]
+symbol = "\uEF01 "             # fa-hat_wizard
+
+[swift]
+symbol = "\uE755 "             # dev-swift
+
+[vlang]
+symbol = "\uE6AC "             # custom-v_lang
+
+[typst]
+symbol = "\uF37F "             # linux-typst
+
+[vagrant]
+symbol = "\uE8D0 "             # dev-vagrant
+
+[xmake]
+symbol = "\uE794 "             # dev-cmake
+
+[zig]
+symbol = "\uE6A9 "             # seti-zig
