@@ -110,7 +110,10 @@ cask "claude-code"
 
 # `uvx` is what Cursor, Claude Desktop, and other MCP clients spawn for
 # Python MCP servers. One machine-wide binary; not a per-project runtime.
+# Dock-launched MCP still needs Homebrew on the GUI PATH — `make gui-path`.
 brew "uv"
+# Teamwork Graph CLI (`twg`) has no formula — Atlassian retired the beta tap.
+# Installed by 'make twg' from https://teamwork-graph.atlassian.com/cli/install.
 
 # --- modern CLI core ---------------------------------------------------------
 brew "bat"

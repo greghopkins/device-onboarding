@@ -28,13 +28,14 @@ Everything past that baseline is installed by this repo.
 git clone <this repo> ~/src/github.com/greghopkins/device-onboarding
 cd ~/src/github.com/greghopkins/device-onboarding
 make all
-make shell     # separate: needs sudo
+make shell      # separate: needs sudo
+make gui-path   # separate: needs sudo; reboot (Cursor MCP / uvx)
 exec zsh
 make doctor
 ```
 
 `make all` runs
-`brew → link → prezto → mise → fonts → iterm → iterm-integration → cursor`. Every
+`brew → link → prezto → mise → fonts → iterm → iterm-integration → cursor → twg`. Every
 target is idempotent, so re-running it after editing a config is safe and cheap.
 
 The order is load-bearing in two places: `link` has to come before `mise`,
@@ -58,6 +59,7 @@ home/                 stowed into $HOME as symlinks (make link)
   .zpreztorc          Prezto module + option config
   .zpreztorc          Prezto module + option config
   .zshrc.d/*.zsh      numbered fragments, loaded last so they win
+                      12-local-bin.zsh: ~/.local/bin (twg; no Homebrew formula)
                       46-granted.zsh: `assume` for AWS SSO (not ~/.zshenv)
                       92-iterm.zsh must sort after 90-prompt.zsh; see the file
   .gitconfig          global git config + per-org identity rules
@@ -94,12 +96,18 @@ A few things can't be scripted:
    Cursor must be restarted to pick up a newly installed extension.
 3. **Login shell.** `make shell` needs sudo to add Homebrew's zsh to
    `/etc/shells`.
-4. **Git identity.** The per-org rules in `home/.gitconfig` ship with
+4. **GUI PATH.** `make gui-path` needs sudo (and a reboot) so Dock-launched
+   Cursor MCP can find Homebrew binaries such as `uvx`. The integrated
+   terminal already has them via .zshrc; MCP spawn does not.
+5. **Git identity.** The per-org rules in `home/.gitconfig` ship with
    placeholders. Fill them in — see [docs/git-identity.md](docs/git-identity.md).
    Until you do, `user.useConfigOnly` will make git refuse to commit, which is
    the intended behavior.
-5. **SSH keys.** Handled by the Bitwarden SSH agent, not by this repo. No keys
+6. **SSH keys.** Handled by the Bitwarden SSH agent, not by this repo. No keys
    or secrets are stored here.
+7. **Teamwork Graph CLI.** `make twg` installs the `twg` binary. There is no
+   Homebrew formula. Sign in with `twg setup` in a real terminal (browser
+   OAuth); that step is not part of `make all`.
 
 ## Docs
 

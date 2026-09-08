@@ -26,10 +26,23 @@ for c in zsh starship mise direnv zoxide delta nvim stow gh jq bat eza fd rg cla
   if command -v "$c" >/dev/null 2>&1; then ok "$c"; else bad "$c not on PATH"; fi
 done
 
+gui_plist="/var/db/com.apple.xpc.launchd/config/user.plist"
+if [[ -f "$gui_plist" ]] && plutil -extract Path raw "$gui_plist" 2>/dev/null | grep -q '/opt/homebrew/bin'; then
+  ok "launchd user PATH includes Homebrew (reboot if MCP still cannot find uvx)"
+else
+  warn "GUI MCP spawn will not see uvx until 'make gui-path' and a reboot"
+fi
+
 if command -v granted >/dev/null 2>&1; then
   ok "granted"
 else
   warn "granted not on PATH (make brew-optional) — AWS profile switching is assume(1)"
+fi
+
+if [[ -x "$HOME/.local/bin/twg" ]]; then
+  ok "twg (Teamwork Graph CLI)"
+else
+  bad "twg not installed (run 'make twg')"
 fi
 
 # ---------------------------------------------------------------------------

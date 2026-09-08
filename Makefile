@@ -5,7 +5,7 @@ REPO_ROOT := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 BREW      := /opt/homebrew/bin/brew
 SCRIPTS   := $(REPO_ROOT)/scripts
 
-.PHONY: help all brew brew-optional mise fonts prezto link unlink relink iterm iterm-integration cursor shell doctor
+.PHONY: help all brew brew-optional mise fonts prezto link unlink relink iterm iterm-integration cursor twg shell gui-path doctor
 
 help: ## Show this help
 	@echo "device-onboarding"
@@ -16,14 +16,14 @@ help: ## Show this help
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo
 	@echo "'make all' is idempotent and safe to re-run."
-	@echo "'make shell' is separate because it needs sudo."
+	@echo "'make shell' and 'make gui-path' are separate because they need sudo."
 
 # Order matters: link must precede mise (which reads the stowed global
 # ~/.config/mise/config.toml), and mise must precede fonts (whose ligature build
 # needs node).
-all: brew link prezto mise fonts iterm iterm-integration cursor ## Everything except the sudo step
+all: brew link prezto mise fonts iterm iterm-integration cursor twg ## Everything except the sudo step
 	@echo
-	@echo "Done. Run 'make shell' to set zsh as the login shell, then 'make doctor'."
+	@echo "Done. Run 'make shell' and 'make gui-path' (both need sudo). Reboot after gui-path."
 
 brew: ## Install the core Brewfile
 	$(BREW) bundle --file="$(REPO_ROOT)/Brewfile"
@@ -61,8 +61,14 @@ iterm-integration: ## Fetch iTerm2 shell integration + it2* utilities from upstr
 cursor: ## Install the One Dark Operator theme and set Cursor fonts
 	$(SCRIPTS)/configure-cursor.sh
 
+twg: ## Install the Atlassian Teamwork Graph CLI (no Homebrew formula)
+	$(SCRIPTS)/install-twg.sh
+
 shell: ## Make Homebrew zsh the login shell (needs sudo)
 	$(SCRIPTS)/set-login-shell.sh
+
+gui-path: ## Put Homebrew on the PATH GUI apps inherit (needs sudo; reboot)
+	$(SCRIPTS)/set-gui-path.sh
 
 doctor: ## Verify every piece of the install landed
 	$(SCRIPTS)/doctor.sh
