@@ -479,6 +479,21 @@ if command -v switcher >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
   fi
 fi
 
+if command -v kubectl >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
+  k_kind="$(CURSOR_AGENT= zsh -i -c 'whence -w k' 2>/dev/null | tail -1)"
+  if [[ "$k_kind" == *' alias' ]]; then
+    ok "k is an alias for kubectl (oh-my-zsh kubectl plugin)"
+  else
+    bad "k is ${k_kind:-missing} (expected an alias from plugins/kubectl)"
+  fi
+  kcuc_kind="$(CURSOR_AGENT= zsh -i -c 'whence -w kcuc' 2>/dev/null | tail -1)"
+  if [[ -z "$kcuc_kind" || "$kcuc_kind" == *' not found' || "$kcuc_kind" == *'none' ]]; then
+    ok "kcuc is unset (switch owns context changes)"
+  else
+    bad "kcuc is ${kcuc_kind} — it writes the shared kubeconfig; unalias it after zplug load"
+  fi
+fi
+
 # aws_completer is a global mise tool. Binding it in a .zshrc.d fragment is
 # wiped by zplug's second compinit; ~/.zsh/tool-completions.zsh is sourced
 # after zplug load so this must be a real _bash_complete entry, not files.

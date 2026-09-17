@@ -7,8 +7,9 @@
 # function is defined here; Tab completion binds after zplug load in
 # ~/.zsh/tool-completions.zsh.
 #
-# Do not add oh-my-zsh `kubectl` or `kubectx`. `kcuc` writes the shared
-# kubeconfig (the opposite of isolation). `kubectx` is a prompt helper;
+# oh-my-zsh `kubectl` aliases (`k`, `keti`, …) load in 48-kubectl-aliases.zsh.
+# That fragment drops `kcuc` / `kcsc` / `kcn` so they cannot write the
+# shared kubeconfig. Do not add `kubectx`: it is a prompt helper, and
 # Starship's kubernetes module already does that.
 #
 # Do not `echo 'source <(switcher init zsh)' >> ~/.zshrc` — stow owns it.

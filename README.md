@@ -62,6 +62,7 @@ home/                 stowed into $HOME as symlinks (make link)
                       12-local-bin.zsh: ~/.local/bin (twg, switcher)
                       46-granted.zsh: `assume` for AWS SSO (not ~/.zshenv)
                       47-kubeswitch.zsh: `switch` for kube contexts (not ~/.zshrc)
+                      48-kubectl-aliases.zsh: omz `k`/`keti`/…; drops kcuc/kcn
                       92-iterm.zsh must sort after 90-prompt.zsh; see the file
   .gitconfig          global git config + per-org identity rules
   .gitignore          global ignore file
@@ -120,8 +121,9 @@ A few things can't be scripted:
    installs `~/.local/bin/switcher`. There is no trusted Homebrew formula.
    `switch` is a sourced function, like `assume`. Pair them: `assume
    <profile>` then `switch` so EKS uses this shell's AWS creds. Starship
-   shows the current context. Do not add the oh-my-zsh `kubectl` plugin
-   (`kcuc` writes the shared kubeconfig).
+   shows the current context. The oh-my-zsh `kubectl` plugin provides
+   `k` / `keti` / `kgp`; `kcuc` / `kcsc` / `kcn` are unset so they
+   cannot write the shared kubeconfig (`switch` / `switch ns` instead).
 
 ## Docs
 

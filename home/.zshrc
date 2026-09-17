@@ -73,6 +73,10 @@ export ZPLUG_REPOS="$HOME/.zplug/repos"
 export ZPLUG_CACHE_DIR="$HOME/.zplug/cache"
 export ZPLUG_BIN="$HOME/.zplug/bin"
 export ZPLUG_LOADFILE="$HOME/.zplug/packages.zsh"
+# oh-my-zsh kubectl writes completions here. We do not have a full omz
+# install, so keep the cache next to zplug's rather than ~/.oh-my-zsh.
+export ZSH_CACHE_DIR="${ZSH_CACHE_DIR:-$HOME/.zplug/cache/oh-my-zsh}"
+mkdir -p "$ZSH_CACHE_DIR/completions"
 
 if [[ -s "$ZPLUG_HOME/init.zsh" ]]; then
   source "$ZPLUG_HOME/init.zsh"
@@ -81,6 +85,7 @@ if [[ -s "$ZPLUG_HOME/init.zsh" ]]; then
   zplug "plugins/macos", from:oh-my-zsh
   zplug "plugins/aliases", from:oh-my-zsh
   zplug "plugins/aws", from:oh-my-zsh
+  zplug "plugins/kubectl", from:oh-my-zsh
   zplug "plugins/sudo", from:oh-my-zsh
   zplug "plugins/dirhistory", from:oh-my-zsh
   zplug "plugins/history", from:oh-my-zsh
@@ -163,3 +168,8 @@ fi
 if [[ -r "$HOME/.zsh/tool-completions.zsh" ]]; then
   source "$HOME/.zsh/tool-completions.zsh"
 fi
+
+# plugins/kubectl may load after .zshrc.d (zplug order), so the unalias
+# in 48-kubectl-aliases.zsh can lose. Drop the kubeconfig writers here,
+# after every plugin has run. `switch` / `switch ns` own those jobs.
+unalias kcuc kcsc kcn 2>/dev/null
