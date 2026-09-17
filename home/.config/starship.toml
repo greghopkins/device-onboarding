@@ -194,7 +194,13 @@ symbol = "\uE624 "             # seti-julia
 symbol = "\uE634 "             # seti-kotlin
 
 [kubernetes]
+# Off in the preset. kubeswitch exports KUBECONFIG for this shell; the
+# module reads that and shows context + namespace. Always-on so the
+# wrong cluster is visible even outside a k8s repo (same idea as aws).
+# No kube-ps1 / oh-my-zsh kubectx — those are the prompt this replaces.
+disabled = false
 symbol = "\U000F10FE "             # md-kubernetes
+style = "cyan"
 
 [lua]
 symbol = "\uE620 "             # seti-lua

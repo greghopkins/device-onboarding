@@ -5,7 +5,7 @@ REPO_ROOT := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 BREW      := /opt/homebrew/bin/brew
 SCRIPTS   := $(REPO_ROOT)/scripts
 
-.PHONY: help all brew brew-optional mise fonts prezto link unlink relink iterm iterm-integration cursor twg shell gui-path doctor
+.PHONY: help all brew brew-optional mise fonts prezto link unlink relink iterm iterm-integration cursor twg kubeswitch shell gui-path doctor
 
 help: ## Show this help
 	@echo "device-onboarding"
@@ -30,6 +30,7 @@ brew: ## Install the core Brewfile
 
 brew-optional: ## Install the opt-in Brewfile (containers, cloud)
 	$(BREW) bundle --file="$(REPO_ROOT)/Brewfile.optional"
+	$(SCRIPTS)/install-kubeswitch.sh
 
 mise: ## Install the pinned language runtimes
 	@command -v mise >/dev/null || { echo "mise not found; run 'make brew' first" >&2; exit 1; }
@@ -63,6 +64,9 @@ cursor: ## Install the One Dark Operator theme and set Cursor fonts
 
 twg: ## Install the Atlassian Teamwork Graph CLI (no Homebrew formula)
 	$(SCRIPTS)/install-twg.sh
+
+kubeswitch: ## Install kubeswitch (switcher binary; no trusted Homebrew tap)
+	$(SCRIPTS)/install-kubeswitch.sh
 
 shell: ## Make Homebrew zsh the login shell (needs sudo)
 	$(SCRIPTS)/set-login-shell.sh

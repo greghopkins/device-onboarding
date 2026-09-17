@@ -26,3 +26,8 @@ brew "opentofu"        # Terraform fork under the Linux Foundation; the
                        # starship.toml terraform module reads its state too
 brew "kubernetes-cli"
 brew "k9s"
+# kubeswitch (`switch`) is the assume-equivalent for kube contexts: a
+# sourced function that exports KUBECONFIG for this shell only. The
+# official Homebrew tap requires `brew trust`; we install the GitHub
+# release into ~/.local/bin instead (`make kubeswitch`). Do not let
+# `switcher init` append to ~/.zshrc — 47-kubeswitch.zsh owns the bind.

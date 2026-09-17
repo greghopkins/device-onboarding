@@ -83,6 +83,15 @@ _onboarding_register_tool_completions() {
     compdef _onboarding_granted granted
     _onboarding_assume_comp=1
   fi
+
+  # kubeswitch: cobra completion for the `switch` function name, not the
+  # `switcher` binary. Skip in Cursor agents (same reason as kubectl).
+  if [[ -z "${CURSOR_AGENT:-}" ]] \
+     && (( $+commands[switcher] )) \
+     && [[ -z ${_onboarding_switch_comp:-} ]]; then
+    source <(switcher completion --cmd switch zsh)
+    _onboarding_switch_comp=1
+  fi
 }
 
 _onboarding_register_tool_completions

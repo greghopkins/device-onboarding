@@ -108,6 +108,15 @@ brew "neovim"     # EDITOR/VISUAL, used for commit messages
 # auto-update instead, but live outside Homebrew.
 cask "claude-code"
 
+# Perplexity Personal Computer lives in this Mac app. There is no CLI
+# formula. The cask is auto_updates, so `brew upgrade` leaves it alone
+# after the first install. Sign-in and Accessibility cannot be scripted;
+# see README.md.
+cask "perplexity"
+# Perplexity's Chromium browser. Official Personal Computer setup lists
+# it as a companion for web automation. Also auto_updates.
+cask "comet"
+
 # `uvx` is what Cursor, Claude Desktop, and other MCP clients spawn for
 # Python MCP servers. One machine-wide binary; not a per-project runtime.
 # Dock-launched MCP still needs Homebrew on the GUI PATH — `make gui-path`.

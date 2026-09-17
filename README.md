@@ -59,8 +59,9 @@ home/                 stowed into $HOME as symlinks (make link)
   .zpreztorc          Prezto module + option config
   .zpreztorc          Prezto module + option config
   .zshrc.d/*.zsh      numbered fragments, loaded last so they win
-                      12-local-bin.zsh: ~/.local/bin (twg; no Homebrew formula)
+                      12-local-bin.zsh: ~/.local/bin (twg, switcher)
                       46-granted.zsh: `assume` for AWS SSO (not ~/.zshenv)
+                      47-kubeswitch.zsh: `switch` for kube contexts (not ~/.zshrc)
                       92-iterm.zsh must sort after 90-prompt.zsh; see the file
   .gitconfig          global git config + per-org identity rules
   .gitignore          global ignore file
@@ -108,6 +109,19 @@ A few things can't be scripted:
 7. **Teamwork Graph CLI.** `make twg` installs the `twg` binary. There is no
    Homebrew formula. Sign in with `twg setup` in a real terminal (browser
    OAuth); that step is not part of `make all`.
+8. **Perplexity Personal Computer.** `make brew` installs
+   `/Applications/Perplexity.app` and `/Applications/Comet.app`. Open
+   Perplexity, sign in with an account that includes Personal Computer, and
+   grant Accessibility under System Settings → Privacy & Security →
+   Accessibility. Without that permission the agent can chat but cannot
+   drive other apps. Sign into Comet with the same account; it is the
+   browser Personal Computer uses for web automation.
+9. **kubeswitch.** `make kubeswitch` (also run from `make brew-optional`)
+   installs `~/.local/bin/switcher`. There is no trusted Homebrew formula.
+   `switch` is a sourced function, like `assume`. Pair them: `assume
+   <profile>` then `switch` so EKS uses this shell's AWS creds. Starship
+   shows the current context. Do not add the oh-my-zsh `kubectl` plugin
+   (`kcuc` writes the shared kubeconfig).
 
 ## Docs
 

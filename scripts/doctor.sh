@@ -39,10 +39,28 @@ else
   warn "granted not on PATH (make brew-optional) — AWS profile switching is assume(1)"
 fi
 
+if command -v switcher >/dev/null 2>&1; then
+  ok "switcher (kubeswitch)"
+else
+  warn "switcher not on PATH (make kubeswitch) — kube context switching is switch(1)"
+fi
+
 if [[ -x "$HOME/.local/bin/twg" ]]; then
   ok "twg (Teamwork Graph CLI)"
 else
   bad "twg not installed (run 'make twg')"
+fi
+
+if [[ -d "/Applications/Perplexity.app" ]]; then
+  ok "Perplexity.app (Personal Computer)"
+else
+  bad "Perplexity.app missing (run 'make brew')"
+fi
+
+if [[ -d "/Applications/Comet.app" ]]; then
+  ok "Comet.app (Perplexity browser)"
+else
+  bad "Comet.app missing (run 'make brew')"
 fi
 
 # ---------------------------------------------------------------------------
@@ -403,6 +421,13 @@ blanks="$(grep -cE '^[[:space:]]*(symbol|read_only)[[:space:]]*=[[:space:]]*"[[:
 [[ "$blanks" -eq 0 ]] && ok "starship symbols all declare a glyph" \
   || bad "$blanks starship symbol(s) are blank — glyphs were stripped"
 
+if grep -A8 '^\[kubernetes\]' "$PKG_DIR/.config/starship.toml" \
+     | grep -qE '^[[:space:]]*disabled[[:space:]]*=[[:space:]]*false'; then
+  ok "starship kubernetes module is on (reads KUBECONFIG from switch)"
+else
+  bad "starship kubernetes module is not enabled"
+fi
+
 if command -v starship >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse >/dev/null 2>&1; then
   # Strip ASCII (which removes the ANSI color codes too); anything left is the
   # glyph's UTF-8 bytes.
@@ -430,6 +455,15 @@ if command -v granted >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
     ok "assume Tab completion uses Granted's flag generator"
   else
     bad "assume Tab completion is ${assume_comp:-unset} (expected _onboarding_assume)"
+  fi
+fi
+
+if command -v switcher >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
+  switch_kind="$(CURSOR_AGENT= zsh -i -c 'whence -w switch' 2>/dev/null | tail -1)"
+  if [[ "$switch_kind" == *' function' ]]; then
+    ok "switch is a shell function (exports KUBECONFIG into this shell)"
+  else
+    bad "switch is ${switch_kind:-missing} (expected a function from 47-kubeswitch.zsh)"
   fi
 fi
 
