@@ -63,6 +63,7 @@ home/                 stowed into $HOME as symlinks (make link)
                       46-granted.zsh: `assume` for AWS SSO (not ~/.zshenv)
                       47-kubeswitch.zsh: `switch` for kube contexts (not ~/.zshrc)
                       48-kubectl-aliases.zsh: omz `k`/`keti`/…; drops kcuc/kcn
+                      kubectl → kubecolor after zplug load (not in Cursor agents)
                       92-iterm.zsh must sort after 90-prompt.zsh; see the file
   .gitconfig          global git config + per-org identity rules
   .gitignore          global ignore file

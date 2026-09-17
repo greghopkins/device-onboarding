@@ -57,6 +57,12 @@ else
   warn "stern not on PATH (make brew-optional)"
 fi
 
+if command -v kubecolor >/dev/null 2>&1; then
+  ok "kubecolor"
+else
+  warn "kubecolor not on PATH (make brew-optional)"
+fi
+
 if [[ -x "$HOME/.local/bin/twg" ]]; then
   ok "twg (Teamwork Graph CLI)"
 else
@@ -491,6 +497,14 @@ if command -v kubectl >/dev/null 2>&1 && command -v zsh >/dev/null 2>&1; then
     ok "kcuc is unset (switch owns context changes)"
   else
     bad "kcuc is ${kcuc_kind} — it writes the shared kubeconfig; unalias it after zplug load"
+  fi
+  if command -v kubecolor >/dev/null 2>&1; then
+    kubectl_kind="$(CURSOR_AGENT= zsh -i -c 'whence -w kubectl' 2>/dev/null | tail -1)"
+    if [[ "$kubectl_kind" == *' alias' ]]; then
+      ok "kubectl is aliased to kubecolor"
+    else
+      bad "kubectl is ${kubectl_kind:-missing} (expected alias kubecolor after zplug load)"
+    fi
   fi
 fi
 

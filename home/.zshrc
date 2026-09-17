@@ -173,3 +173,11 @@ fi
 # in 48-kubectl-aliases.zsh can lose. Drop the kubeconfig writers here,
 # after every plugin has run. `switch` / `switch ns` own those jobs.
 unalias kcuc kcsc kcn 2>/dev/null
+
+# After kubectl completions bind (above). `k` is already alias kubectl, so
+# this makes both colorful. Skip in Cursor agents so dumps stay parseable.
+# kubecolor disables color when stdout is not a TTY.
+if [[ -z "${CURSOR_AGENT:-}" ]] && (( $+commands[kubecolor] )); then
+  alias kubectl=kubecolor
+  compdef kubecolor=kubectl 2>/dev/null
+fi
