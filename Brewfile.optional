@@ -25,6 +25,8 @@ brew "granted"
 brew "opentofu"        # Terraform fork under the Linux Foundation; the
                        # starship.toml terraform module reads its state too
 brew "kubernetes-cli"
+brew "helm"            # charts; kubectl does not ship this
+brew "stern"           # tail logs across pods. k9s can do it; this is the CLI
 brew "k9s"
 # kubeswitch (`switch`) is the assume-equivalent for kube contexts: a
 # sourced function that exports KUBECONFIG for this shell only. The

@@ -45,6 +45,18 @@ else
   warn "switcher not on PATH (make kubeswitch) — kube context switching is switch(1)"
 fi
 
+if command -v helm >/dev/null 2>&1; then
+  ok "helm"
+else
+  warn "helm not on PATH (make brew-optional)"
+fi
+
+if command -v stern >/dev/null 2>&1; then
+  ok "stern"
+else
+  warn "stern not on PATH (make brew-optional)"
+fi
+
 if [[ -x "$HOME/.local/bin/twg" ]]; then
   ok "twg (Teamwork Graph CLI)"
 else

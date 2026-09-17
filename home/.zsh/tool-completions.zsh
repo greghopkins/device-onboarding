@@ -75,6 +75,13 @@ _onboarding_register_tool_completions() {
     _onboarding_kubectl_comp=1
   fi
 
+  if [[ -z "${CURSOR_AGENT:-}" ]] \
+     && (( $+commands[helm] )) \
+     && [[ -z ${_onboarding_helm_comp:-} ]]; then
+    source <(helm completion zsh)
+    _onboarding_helm_comp=1
+  fi
+
   # Granted's Homebrew formula ships no zsh completions. `granted completion
   # -s zsh` writes fpath into ~/.zshenv, which we refuse. Bind after zplug's
   # second compinit instead.
